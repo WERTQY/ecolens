@@ -41,5 +41,12 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        Button btnGoToCarbon = view.findViewById(R.id.btnGoToCarbon);
+        btnGoToCarbon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(v).navigate(R.id.action_homeFragment_to_carbonFootprintFragment);
+            }
+        });
     }
 }
