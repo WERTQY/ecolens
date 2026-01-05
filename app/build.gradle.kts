@@ -15,12 +15,12 @@ if (localPropertiesFile.exists()) {
 
 android {
     namespace = "com.example.ecolens"
-    compileSdk = 34 // Updated to a stable version
+    compileSdk = 36 // Updated to a stable version
 
     defaultConfig {
         applicationId = "com.example.ecolens"
         minSdk = 24
-        targetSdk = 34 // Updated to match compileSdk
+        targetSdk = 36 // Updated to match compileSdk
         versionCode = 1
         versionName = "1.0"
 
