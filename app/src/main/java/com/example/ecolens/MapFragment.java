@@ -71,12 +71,32 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
 
         setupFilterButtons(view);
+        
+        SearchView searchView = view.findViewById(R.id.search_view);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                currentSearchQuery = query;
+                filterAndShowMarkers();
+                searchView.clearFocus(); // Hide keyboard
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                currentSearchQuery = newText;
+                filterAndShowMarkers();
+                return true;
+            }
+        });
+
         return view;
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.getUiSettings().setZoomControlsEnabled(true);
 
         // 1. Always set a default starting position to prevent a blank map.
         LatLng defaultLocation = new LatLng(3.1390, 101.6869);

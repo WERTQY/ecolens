@@ -41,5 +41,12 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        Button btnGoToMap = view.findViewById(R.id.btnGoToMap);
+        btnGoToMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(v).navigate(R.id.action_homeFragment_to_mapFragment);
+            }
+        });
     }
 }

@@ -8,19 +8,19 @@ plugins {
 
 // Read the API key from local.properties
 val localProperties = Properties()
-val localPropertiesFile = project.rootProject.file("app/local.properties")
+val localPropertiesFile = project.rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
     localProperties.load(FileInputStream(localPropertiesFile))
 }
 
 android {
     namespace = "com.example.ecolens"
-    compileSdk = 36 // Updated to a stable version
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.ecolens"
         minSdk = 24
-        targetSdk = 36 // Updated to match compileSdk
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
