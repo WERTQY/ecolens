@@ -14,4 +14,5 @@
     <string name="filter_paper">Paper</string>
     <string name="filter_fabric">Fabric</string>
     <string name="filter_glass">Glass</string>
+    <string name="filter_cooking_oil">Cooking Oil</string>
 </resources>

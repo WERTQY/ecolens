@@ -1,28 +1,44 @@
 package com.example.ecolens;
 
+// No longer need GeoPoint
+// import com.google.firebase.firestore.GeoPoint;
+
 public class RecyclingCenter {
     private String name;
-    private double latitude;
-    private double longitude;
-    private String type;     // e.g., "E-Waste", "Paper", "Glass"
+    private String type;
     private String address;
+    private double latitude;  // Changed from GeoPoint
+    private double longitude; // Changed from GeoPoint
 
-    // 1. Required empty constructor for Firebase
+    // IMPORTANT: A public no-argument constructor is required for Firestore deserialization
     public RecyclingCenter() {}
 
-    // 2. Normal constructor for your own use
-    public RecyclingCenter(String name, double latitude, double longitude, String type, String address) {
+    public RecyclingCenter(String name, String type, String address, double latitude, double longitude) {
         this.name = name;
-        this.latitude = latitude;
-        this.longitude = longitude;
         this.type = type;
         this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
-    // 3. Getters are required for Firebase to read data
-    public String getName() { return name; }
-    public double getLatitude() { return latitude; }
-    public double getLongitude() { return longitude; }
-    public String getType() { return type; }
-    public String getAddress() { return address; }
+    // --- Getters ---
+    public String getName() {
+        return name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
 }

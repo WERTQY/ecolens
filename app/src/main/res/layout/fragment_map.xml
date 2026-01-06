@@ -6,79 +6,89 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MapFragment">
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <LinearLayout
-        android:id="@+id/filter_buttons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_alignParentTop="true"
-        android:padding="8dp"
-        android:background="#80FFFFFF"
-        style="?android:attr/buttonBarStyle">
-
-        <Button
-            android:id="@+id/btnFilterAll"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/filter_all"
-            style="?android:attr/buttonBarButtonStyle" />
-
-        <Button
-            android:id="@+id/btnFilterEwaste"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/filter_ewaste"
-            style="?android:attr/buttonBarButtonStyle" />
-
-        <Button
-            android:id="@+id/btnFilterPaper"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/filter_paper"
-            style="?android:attr/buttonBarButtonStyle" />
-
-        <Button
-            android:id="@+id/btnFilterFabric"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/filter_fabric"
-            style="?android:attr/buttonBarButtonStyle" />
-
-        <Button
-            android:id="@+id/btnFilterGlass"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/filter_glass"
-            style="?android:attr/buttonBarButtonStyle" />
-
-    </LinearLayout>
-
     <androidx.cardview.widget.CardView
+        android:id="@+id/search_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/filter_buttons"
+        android:layout_alignParentTop="true"
         android:layout_margin="8dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp">
 
-        <SearchView
+        <androidx.appcompat.widget.SearchView
             android:id="@+id/search_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:queryHint="Search for recycling centers..."
-            android:iconifiedByDefault="false" />
+            app:iconifiedByDefault="false" />
 
     </androidx.cardview.widget.CardView>
+
+    <HorizontalScrollView
+        android:id="@+id/filter_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/search_card"
+        android:scrollbars="none">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/filter_chip_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_all"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_all"
+                android:checked="true" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_ewaste"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_ewaste" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_paper"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_paper" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_fabric"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_fabric" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_glass"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_glass" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_cooking_oil"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_cooking_oil" />
+
+        </com.google.android.material.chip.ChipGroup>
+
+    </HorizontalScrollView>
 
 </RelativeLayout>
