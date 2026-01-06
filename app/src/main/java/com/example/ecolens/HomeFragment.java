@@ -32,12 +32,23 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        //logout button
         Button btnLogout = view.findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 FirebaseAuth.getInstance().signOut();
                 Navigation.findNavController(view).navigate(R.id.loginFragment);
+            }
+        });
+
+        //scan waste button
+        Button btnScanWaste = view.findViewById(R.id.btnScanWaste);
+        btnScanWaste.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_scannerFragment);
             }
         });
 
