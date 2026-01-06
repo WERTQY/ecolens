@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/app_nav"
-    app:startDestination="@id/loginFragment">
+    app:startDestination="@id/wasteEncyclopediaFragment">
 
     <fragment
         android:id="@+id/loginFragment"
@@ -33,5 +33,14 @@
         android:id="@+id/homeFragment"
         android:name="com.example.ecolens.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_wasteEncyclopediaFragment"
+            app:destination="@id/wasteEncyclopediaFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/wasteEncyclopediaFragment"
+        android:name="com.example.ecolens.WasteEncyclopediaFragment"
+        android:label="fragment_waste_encyclopedia"
+        tools:layout="@layout/fragment_waste_encyclopedia" />
 </navigation>
