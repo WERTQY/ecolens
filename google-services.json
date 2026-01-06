@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "79814487842",
+    "project_id": "ecolens-771b1",
+    "storage_bucket": "ecolens-771b1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:79814487842:android:c5cf61349818861ed63f7b",
+        "android_client_info": {
+          "package_name": "com.example.ecolens"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlP13DYSawKU4ZlMFQy1lGijYoufZ4NBI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

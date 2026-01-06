@@ -27,6 +27,18 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"/>
 
+    <TextView
+        android:id="@+id/popup_tv_recyclable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"/>
+
+    <TextView
+        android:id="@+id/popup_tv_hazardous"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"/>
+
     <Button
         android:id="@+id/popup_btn_close"
         android:layout_width="wrap_content"

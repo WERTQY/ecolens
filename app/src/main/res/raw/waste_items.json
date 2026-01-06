@@ -1,7 +1,0 @@
-[
-  {"name":"Batteries","preparation":"Tape the terminals and send to e-waste center.","hazardous":true,"image":"img_batteries","recyclable":false},
-  {"name":"Plastic Bottle","preparation":"Please rinse the bottle and remove the cap.","hazardous":false,"image":"img_plastic_bottle","recyclable":true},
-  {"name":"Cardboard Box","preparation":"Flatten the box before recycling.","hazardous":false,"image":"img_cardboard","recyclable":true},
-  {"name":"Light Bulb","preparation":"Wrap in paper. Do not mix with glass bin.","hazardous":true,"image":"img_bulb","recyclable":false},
-  {"name":"Electronics","preparation":"Do NOT bin. Bring to certified recycling point.","hazardous":true,"image":"img_electronics","recyclable":false}
-]
