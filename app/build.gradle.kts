@@ -20,7 +20,7 @@ android {
     defaultConfig {
         applicationId = "com.example.ecolens"
         minSdk = 24
-        targetSdk = 36 // Updated to match compileSdk
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.navigation.ui)
     implementation(libs.fragment)
     implementation(libs.cardview)
+    implementation("com.github.bumptech.glide:glide:4.16.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
