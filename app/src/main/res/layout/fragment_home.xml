@@ -12,13 +12,14 @@
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         app:elevation="0dp"
+        app:layout_constraintTop_toTopOf="parent"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.App.LargeComponent">
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="90dp"
-            android:paddingTop="30dp"
-            android:background="#2E7D32">
+            android:background="#2E7D32"
+            android:paddingTop="30dp">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/home_toolbar"
@@ -33,6 +34,17 @@
                 android:layout_gravity="start|center_vertical"
                 android:src="@drawable/ecolens_transparent_background" />
 
+            <ImageButton
+                android:id="@+id/profile_button"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_person"
+                app:tint="@android:color/white" />
+
         </FrameLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -42,7 +54,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/denk_one"
         android:gravity="center"
@@ -50,20 +62,19 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="48sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/carbon_footprint_card"
-        android:layout_width="0dp"
+        android:layout_width="355dp"
         android:layout_height="157dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginTop="20dp"
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/welcomeMsg"
+        app:layout_constraintStart_toStartOf="@+id/welcomeMsg"
         app:layout_constraintTop_toBottomOf="@+id/welcomeMsg">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -74,13 +85,12 @@
                 android:id="@+id/carbon_footprint_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:text="Total Carbon Footprint Saved"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                app:layout_constraintBottom_toTopOf="@+id/carbon_footprint_value"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_chainStyle="packed" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/carbon_footprint_value"
@@ -93,8 +103,10 @@
                 android:textSize="48sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.497"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/carbon_footprint_title" />
+                app:layout_constraintTop_toBottomOf="@+id/carbon_footprint_title"
+                app:layout_constraintVertical_bias="0.085" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -102,9 +114,9 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/achievement_card"
-        android:layout_width="0dp"
+        android:layout_width="355dp"
         android:layout_height="130dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="20dp"
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp"
         app:layout_constraintEnd_toEndOf="@+id/carbon_footprint_card"
@@ -136,7 +148,7 @@
         android:id="@+id/btnScanWaste"
         android:layout_width="164dp"
         android:layout_height="61dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="36dp"
         android:backgroundTint="#4CAF50"
         android:padding="16dp"
         android:text="Scan Waste"
@@ -144,6 +156,7 @@
         android:visibility="visible"
         app:icon="@android:drawable/ic_menu_camera"
         app:layout_constraintEnd_toStartOf="@+id/btnLogout"
+        app:layout_constraintHorizontal_bias="0.424"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/achievement_card" />
 
@@ -151,8 +164,8 @@
         android:id="@+id/btnLogout"
         android:layout_width="165dp"
         android:layout_height="61dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="28dp"
         android:backgroundTint="@android:color/darker_gray"
         android:text="Logout"
         android:visibility="visible"
