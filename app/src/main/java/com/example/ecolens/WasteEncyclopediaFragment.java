@@ -20,8 +20,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -48,6 +52,12 @@ public class WasteEncyclopediaFragment extends Fragment {
         recyclerView = view.findViewById(R.id.rv_waste_items);
         etSearch = view.findViewById(R.id.et_search);
         ImageButton btnSearch = view.findViewById(R.id.btn_search);
+
+        //toolbar back to home
+        View backButton = view.findViewById(R.id.btn_back_manual);
+        backButton.setOnClickListener(v -> {
+            Navigation.findNavController(view).navigateUp();
+        });
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -196,6 +206,9 @@ public class WasteEncyclopediaFragment extends Fragment {
         private void showPopup(WasteItem item, Context viewContext) {
             final Dialog dialog = new Dialog(viewContext);
             dialog.setContentView(R.layout.popup_waste_item);
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            }
 
             ImageView popupImg = dialog.findViewById(R.id.popup_img_item);
             TextView popupName = dialog.findViewById(R.id.popup_tv_item_name);

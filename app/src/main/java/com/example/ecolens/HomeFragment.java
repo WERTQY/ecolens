@@ -42,15 +42,5 @@ public class HomeFragment extends Fragment {
                 Navigation.findNavController(view).navigate(R.id.loginFragment);
             }
         });
-
-        //scan waste button
-        Button btnScanWaste = view.findViewById(R.id.btnScanWaste);
-        btnScanWaste.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_scannerFragment);
-            }
-        });
-
     }
 }

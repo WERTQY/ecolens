@@ -2,14 +2,12 @@ package com.example.ecolens;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +25,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.navigation.Navigation;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -42,9 +41,6 @@ public class ScannerFragment extends Fragment {
     private TextView binInstructionText;
     private TextView confidenceText;
     private Button closeButton;
-    private ImageButton backButton;
-
-    // This handles the result of the permission request
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
@@ -70,25 +66,26 @@ public class ScannerFragment extends Fragment {
         binInstructionText = view.findViewById(R.id.scanner_bin_instruction);
         confidenceText = view.findViewById(R.id.scanner_confidence_text);
         closeButton = view.findViewById(R.id.scanner_btn_close);
-        backButton = view.findViewById(R.id.btnBack);
+        MaterialToolbar toolbar = view.findViewById(R.id.scan_toolbar);
 
-        //capture button
-        captureButton.setOnClickListener(v -> {
-            showPopup("Plastic", "Orange", 99);
-        });
-
-        //close button
-        closeButton.setOnClickListener(v -> {
-            resultCard.setVisibility(View.INVISIBLE);
-        });
-
-        //back button
+        //toolbar back to home
+        View backButton = view.findViewById(R.id.btn_back_manual);
         backButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigateUp();
         });
 
+        // Capture button (Dummy Logic)
+        captureButton.setOnClickListener(v -> {
+            showPopup("Plastic", "Orange", 99);
+        });
+
+        // Close button for the popup
+        closeButton.setOnClickListener(v -> {
+            resultCard.setVisibility(View.INVISIBLE);
+        });
 
 
+        // Camera Permissions
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             startCamera();
         } else {
@@ -109,8 +106,8 @@ public class ScannerFragment extends Fragment {
                 CameraSelector cameraSelector = new CameraSelector.Builder()
                         .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                         .build();
-                cameraProvider.unbindAll();
 
+                cameraProvider.unbindAll();
                 cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, preview);
 
             } catch (ExecutionException | InterruptedException e) {
@@ -119,14 +116,11 @@ public class ScannerFragment extends Fragment {
         }, ContextCompat.getMainExecutor(requireContext()));
     }
 
-    //shows results
+    // Dummy logic popup
     private void showPopup(String detectedItem, String binType, float confidence){
-        // Update the text views with the dummy data
         resultText.setText("Detected: " + detectedItem);
         binInstructionText.setText("Throw in " + binType);
         confidenceText.setText(String.format("Confidence: %.1f%%", confidence));
-
-        // Make the result card visible to the user
         resultCard.setVisibility(View.VISIBLE);
     }
 }
