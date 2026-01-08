@@ -21,7 +21,7 @@
         android:title="Info" />
 
     <item
-        android:id="@+id/calculatorFragment"
+        android:id="@+id/carbonFootprintFragment"
         android:icon="@drawable/ic_green_footprint"
         android:title="Calculator" />
 

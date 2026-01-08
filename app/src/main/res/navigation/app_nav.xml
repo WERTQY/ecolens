@@ -9,38 +9,61 @@
         android:id="@+id/loginFragment"
         android:name="com.example.ecolens.LoginFragment"
         android:label="fragment_login"
-        tools:layout="@layout/fragment_login" >
+        tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment" />
+
         <action
             android:id="@+id/action_loginFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/app_nav"
+            app:popUpToInclusive="true" />
     </fragment>
+
     <fragment
         android:id="@+id/registerFragment"
         android:name="com.example.ecolens.RegisterFragment"
         android:label="fragment_register"
-        tools:layout="@layout/fragment_register" >
+        tools:layout="@layout/fragment_register">
         <action
             android:id="@+id/action_registerFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
         <action
             android:id="@+id/action_registerFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/app_nav"
+            app:popUpToInclusive="true" />
     </fragment>
+
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.ecolens.HomeFragment"
-        android:label="fragment_home"
-        tools:layout="@layout/fragment_home">
-        <action
-            android:id="@+id/action_homeFragment_to_carbonFootprintFragment"
-            app:destination="@id/carbonFootprintFragment" />
-    </fragment>
+        android:label="Home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.example.ecolens.MapFragment"
+        android:label="Map"
+        tools:layout="@layout/fragment_map" />
+
+    <fragment
+        android:id="@+id/scannerFragment"
+        android:name="com.example.ecolens.ScannerFragment"
+        android:label="Scan"
+        tools:layout="@layout/fragment_scanner" />
+
+    <fragment
+        android:id="@+id/encyclopediaFragment"
+        android:name="com.example.ecolens.WasteEncyclopediaFragment"
+        android:label="Guide"
+        tools:layout="@layout/fragment_waste_encyclopedia" />
+
     <fragment
         android:id="@+id/carbonFootprintFragment"
         android:name="com.example.ecolens.CarbonFootprintFragment"
-        android:label="fragment_carbon_footprint"
+        android:label="Calculator"
         tools:layout="@layout/fragment_carbon_footprint" />
+
 </navigation>

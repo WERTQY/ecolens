@@ -47,9 +47,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Search bar -->
 
-    <!-- RecyclerView for search results -->
     <LinearLayout
         android:id="@+id/search_layout"
         android:layout_width="0dp"

@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
             // 2. Handle visibility logic
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-                if (destination.getId() == R.id.loginFragment || destination.getId() == R.id.registerFragment) {
+                if (destination.getId() == R.id.loginFragment || destination.getId() == R.id.registerFragment || destination.getId() == R.id.scannerFragment) {
                     bottomNavCard.setVisibility(View.GONE);
                 } else {
                     bottomNavCard.setVisibility(View.VISIBLE);

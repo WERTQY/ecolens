@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -80,6 +81,17 @@ public class CarbonFootprintFragment extends Fragment {
         buttonCalculate.setOnClickListener(v -> calculateCarbonFootprint());
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        View backButton = view.findViewById(R.id.btn_back_manual);
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> {
+                Navigation.findNavController(view).navigateUp();
+            });
+        }
     }
 
     private void initializeViews(View view) {
