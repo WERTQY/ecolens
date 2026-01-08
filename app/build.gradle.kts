@@ -5,9 +5,8 @@ plugins {
 
 android {
     namespace = "com.example.ecolens"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
+
 
     defaultConfig {
         applicationId = "com.example.ecolens"
@@ -40,6 +39,9 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.firebase.auth)
+    implementation(platform("com.google.firebase:firebase-bom:34.7.0"))
+    implementation ("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-database")
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
     implementation(libs.fragment)

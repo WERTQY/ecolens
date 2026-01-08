@@ -33,5 +33,14 @@
         android:id="@+id/homeFragment"
         android:name="com.example.ecolens.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_carbonFootprintFragment"
+            app:destination="@id/carbonFootprintFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/carbonFootprintFragment"
+        android:name="com.example.ecolens.CarbonFootprintFragment"
+        android:label="fragment_carbon_footprint"
+        tools:layout="@layout/fragment_carbon_footprint" />
 </navigation>

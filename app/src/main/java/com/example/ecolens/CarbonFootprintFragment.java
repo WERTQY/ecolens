@@ -163,6 +163,7 @@ public class CarbonFootprintFragment extends Fragment {
 
         // This is required for the lambda expression.
         final double finalSessionTotal = sessionTotal;
+        Log.w(TAG, "userimpactdocref:"+userImpactDocRef);
 
         // --- Definitive Get-then-Set Solution ---
         if (userImpactDocRef != null && currentUser != null) {
