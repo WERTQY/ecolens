@@ -154,38 +154,65 @@
         app:layout_constraintStart_toStartOf="@+id/editTextPlastic"
         app:layout_constraintTop_toBottomOf="@+id/editTextOrganic" />
 
-    <TextView
-        android:id="@+id/textViewResult"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="This Time: 0 kg CO₂e"
-        android:textColor="#000000"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonCalculate"
-        tools:visibility="visible" />
 
     <ImageView
         android:id="@+id/imageViewFootprint"
         android:layout_width="150dp"
         android:layout_height="150dp"
+        android:layout_marginTop="80dp"
         android:alpha="0.1"
         android:contentDescription="Footprint Icon"
         android:src="@drawable/ic_green_footprint"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintVertical_chainStyle="packed"
+
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
+        app:layout_constraintBottom_toTopOf="@+id/textViewResult"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="150dp"
+        android:text="Current Saved: 0 kg CO₂e"
+        android:textColor="#000000"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+
+        app:layout_constraintTop_toBottomOf="@+id/imageViewFootprint"
+        app:layout_constraintBottom_toTopOf="@+id/btn_ok"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/btn_ok"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginEnd="48dp"
+        android:backgroundTint="#2E7D32"
+        android:text="OK"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:visibility="gone"
+
+        app:layout_constraintTop_toBottomOf="@+id/textViewResult"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        tools:visibility="visible" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/groupInputs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="editTextPlastic,editTextPaper,editTextAluminium,editTextGlass,editTextOrganic,buttonCalculate,textViewResult" />
+        app:constraint_referenced_ids="editTextPlastic,editTextPaper,editTextAluminium,editTextGlass,editTextOrganic,buttonCalculate" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -38,6 +38,7 @@ public class CarbonFootprintFragment extends Fragment {
     // --- Views ---
     private EditText editTextPlastic, editTextPaper, editTextAluminium, editTextGlass, editTextOrganic;
     private Button buttonCalculate;
+    private Button btn_ok;
     // We now correctly reference both TextViews separately
     private TextView textViewResult, textViewGrossTotal;
     private ImageView imageViewFootprint;
@@ -79,7 +80,7 @@ public class CarbonFootprintFragment extends Fragment {
         fetchGrossTotal();
 
         buttonCalculate.setOnClickListener(v -> calculateCarbonFootprint());
-
+        btn_ok.setOnClickListener(v -> resetUI());
         return view;
     }
 
@@ -94,6 +95,7 @@ public class CarbonFootprintFragment extends Fragment {
         }
     }
 
+
     private void initializeViews(View view) {
         editTextPlastic = view.findViewById(R.id.editTextPlastic);
         editTextPaper = view.findViewById(R.id.editTextPaper);
@@ -101,6 +103,7 @@ public class CarbonFootprintFragment extends Fragment {
         editTextGlass = view.findViewById(R.id.editTextGlass);
         editTextOrganic = view.findViewById(R.id.editTextOrganic);
         buttonCalculate = view.findViewById(R.id.buttonCalculate);
+        btn_ok = view.findViewById(R.id.btn_ok);
         textViewGrossTotal = view.findViewById(R.id.textViewGrossTotal);
         imageViewFootprint = view.findViewById(R.id.imageViewFootprint);
         groupInputs = view.findViewById(R.id.groupInputs);
@@ -110,11 +113,16 @@ public class CarbonFootprintFragment extends Fragment {
     private void setupTextWatchers() {
         TextWatcher textWatcher = new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         };
         editTextPlastic.addTextChangedListener(textWatcher);
         editTextPaper.addTextChangedListener(textWatcher);
@@ -151,7 +159,7 @@ public class CarbonFootprintFragment extends Fragment {
     // This method ONLY updates the gross total TextView.
     private void updateGrossTotalText() {
         if (textViewGrossTotal != null) {
-            textViewGrossTotal.setText(String.format("Gross Total Saved: %.2f kg CO2e", grossTotal));
+            textViewGrossTotal.setText(String.format("Gross Total Saved: %.2f kg CO₂e", grossTotal));
         }
     }
 
@@ -171,11 +179,11 @@ public class CarbonFootprintFragment extends Fragment {
         sessionTotal += getWeight(editTextGlass) * EMISSION_FACTOR_GLASS;
         sessionTotal += getWeight(editTextOrganic) * EMISSION_FACTOR_ORGANIC;
 
-        textViewResult.setText(String.format("This Time: %.2f kg CO2e", sessionTotal));
+        textViewResult.setText(String.format("Current Saved: %.2f kg CO2e", sessionTotal));
 
         // This is required for the lambda expression.
         final double finalSessionTotal = sessionTotal;
-        Log.w(TAG, "userimpactdocref:"+userImpactDocRef);
+        Log.w(TAG, "userimpactdocref:" + userImpactDocRef);
 
         // --- Definitive Get-then-Set Solution ---
         if (userImpactDocRef != null && currentUser != null) {
@@ -211,7 +219,7 @@ public class CarbonFootprintFragment extends Fragment {
                 // This would fail if the user doesn't even have read permission.
                 Log.w(TAG, "Failed to get document before setting data: ", e);
             });
-        }else {
+        } else {
             // --- ADDED CONDITION ---
             // Log an error if the user is not authenticated or the doc ref is null
             Log.e(TAG, "Cannot update gross total: User is not authenticated or userImpactDocRef is null.");
@@ -220,12 +228,11 @@ public class CarbonFootprintFragment extends Fragment {
         groupInputs.setVisibility(View.GONE);
         imageViewFootprint.setVisibility(View.VISIBLE);
         textViewResult.setVisibility(View.VISIBLE);
+        btn_ok.setVisibility(View.VISIBLE);
 
         animateResultText(sessionTotal);
         animateFootprint(sessionTotal);
     }
-
-
 
 
     // This animation method now ONLY updates the session result TextView.
@@ -236,7 +243,7 @@ public class CarbonFootprintFragment extends Fragment {
         animator.addUpdateListener(animation -> {
             float animatedValue = (float) animation.getAnimatedValue();
             // This now correctly updates ONLY the session TextView, leaving the gross total alone.
-            textViewResult.setText(String.format("This Time: %.2f kg CO2e", animatedValue));
+            textViewResult.setText(String.format("Current Saved: %.2f kg CO₂e", animatedValue));
         });
         animator.start();
     }
@@ -256,5 +263,20 @@ public class CarbonFootprintFragment extends Fragment {
     private double getWeight(EditText editText) {
         String text = editText.getText().toString();
         return text.isEmpty() ? 0 : Double.parseDouble(text);
+    }
+
+    private void resetUI(){
+        imageViewFootprint.setVisibility(View.GONE);
+        textViewResult.setVisibility(View.GONE);
+        btn_ok.setVisibility(View.GONE);
+
+        editTextPlastic.setText("");
+        editTextPaper.setText("");
+        editTextAluminium.setText("");
+        editTextGlass.setText("");
+        editTextOrganic.setText("");
+
+        groupInputs.setVisibility(View.VISIBLE);
+        imageViewFootprint.clearAnimation();
     }
 }
