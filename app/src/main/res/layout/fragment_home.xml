@@ -195,8 +195,8 @@
 
             <Button
                 android:id="@+id/btnDiary"
-                android:layout_width="66dp"
-                android:layout_height="39dp"
+                android:layout_width="81dp"
+                android:layout_height="37dp"
                 android:layout_marginEnd="12dp"
                 android:layout_marginBottom="8dp"
                 android:text="@string/diary"
