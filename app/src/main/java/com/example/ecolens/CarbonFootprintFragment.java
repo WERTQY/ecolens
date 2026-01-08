@@ -215,6 +215,15 @@ public class CarbonFootprintFragment extends Fragment {
                             Log.w(TAG, "Set with merge failed: ", e);
                         });
 
+                //SAVE HISTORY (For Diary) ---
+                Map<String, Object> historyEntry = new HashMap<>();
+                historyEntry.put("amount", finalSessionTotal);
+                historyEntry.put("timestamp", com.google.firebase.Timestamp.now()); // Saves current Date & Time
+
+                userImpactDocRef.collection("history")
+                        .add(historyEntry)
+                        .addOnSuccessListener(docRef -> Log.d(TAG, "History saved with ID: " + docRef.getId()))
+                        .addOnFailureListener(e -> Log.w(TAG, "Error saving history", e));
             }).addOnFailureListener(e -> {
                 // This would fail if the user doesn't even have read permission.
                 Log.w(TAG, "Failed to get document before setting data: ", e);
