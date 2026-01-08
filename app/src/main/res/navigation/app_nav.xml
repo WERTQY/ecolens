@@ -66,4 +66,9 @@
         android:label="Calculator"
         tools:layout="@layout/fragment_carbon_footprint" />
 
+    <fragment
+        android:id="@+id/diaryFragment"
+        android:name="com.example.ecolens.DiaryFragment"
+        android:label="fragment_diary"
+        tools:layout="@layout/fragment_diary" />
 </navigation>
