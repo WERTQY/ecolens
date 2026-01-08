@@ -147,7 +147,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/userAchievement"
+                android:id="@+id/tvAchievementTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -157,7 +157,52 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.148" />
+                app:layout_constraintVertical_bias="0.305" />
+
+            <TextView
+                android:id="@+id/tvStreak"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/_0_day_streak"
+                android:textSize="14sp"
+                android:textColor="#FF5722"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imgTierBadge"
+                android:layout_width="28dp"
+                android:layout_height="29dp"
+                android:layout_marginStart="24dp"
+                android:src="@drawable/ic_launcher_background"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvAchievementTitle"
+                app:layout_constraintVertical_bias="0.56" />
+
+            <TextView
+                android:id="@+id/tvTierName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/loading"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/eco_green_primary"
+                app:layout_constraintBottom_toBottomOf="@+id/imgTierBadge"
+                app:layout_constraintStart_toEndOf="@+id/imgTierBadge"
+                app:layout_constraintTop_toTopOf="@+id/imgTierBadge" />
+
+            <Button
+                android:id="@+id/btnDiary"
+                android:layout_width="66dp"
+                android:layout_height="39dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/diary"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

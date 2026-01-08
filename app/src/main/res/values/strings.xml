@@ -21,4 +21,7 @@
     <string name="kg_co_e">kg CO₂e</string>
     <string name="your_current_achievement">Your Current Achievement</string>
     <string name="logout">Logout</string>
+    <string name="diary">Diary</string>
+    <string name="loading">Loading...</string>
+    <string name="_0_day_streak">🔥 0 Day Streak</string>
 </resources>
