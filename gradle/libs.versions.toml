@@ -7,12 +7,11 @@ appcompat = "1.7.1"
 material = "1.13.0"
 activity = "1.9.0"
 constraintlayout = "2.2.1"
-googleGmsGoogleServices = "4.4.4"
+googleGmsGoogleServices = "4.4.1"
 firebaseAuth = "24.0.1"
 firebaseFirestore = "25.0.0"
-navigationFragment = "2.9.6"
-navigationUi = "2.9.6"
-fragment = "1.8.9"
+navigation = "2.7.7"
+fragment = "1.6.2"
 cardview = "1.0.0"
 
 [libraries]
@@ -25,8 +24,8 @@ activity = { group = "androidx.activity", name = "activity", version.ref = "acti
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
-navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
-navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
+navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "fragment" }
+navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigation" }
 fragment = { group = "androidx.fragment", name = "fragment", version.ref = "fragment" }
 cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }
 
