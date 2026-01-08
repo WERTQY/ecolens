@@ -88,25 +88,42 @@
                 android:layout_marginTop="16dp"
                 android:text="Total Carbon Footprint Saved"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/carbon_footprint_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="216dp"
+                android:layout_height="88dp"
                 android:layout_marginTop="8dp"
-                android:fontFamily="@font/denk_one"
-                android:text="67 kg"
+                android:fontFamily="@font/frank_ruhl_libre_medium"
+                android:text="00.00"
+                android:textAlignment="center"
                 android:textColor="?attr/colorPrimary"
-                android:textSize="48sp"
+                android:textSize="70sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.497"
+                app:layout_constraintEnd_toStartOf="@+id/carbon_footprint_unit"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/carbon_footprint_title"
-                app:layout_constraintVertical_bias="0.085" />
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/carbon_footprint_unit"
+                android:layout_width="115dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/frank_ruhl_libre_medium"
+                android:text="kg CO₂e"
+                android:textAlignment="center"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="30sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/carbon_footprint_title"
+                app:layout_constraintVertical_bias="0.493" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -145,41 +162,15 @@
     </androidx.cardview.widget.CardView>
 
     <Button
-        android:id="@+id/btnScanWaste"
-        android:layout_width="164dp"
-        android:layout_height="61dp"
-        android:layout_marginTop="36dp"
-        android:backgroundTint="#4CAF50"
-        android:padding="16dp"
-        android:text="Scan Waste"
-        android:textSize="18sp"
-        android:visibility="visible"
-        app:icon="@android:drawable/ic_menu_camera"
-        app:layout_constraintEnd_toStartOf="@+id/btnLogout"
-        app:layout_constraintHorizontal_bias="0.424"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/achievement_card" />
-
-    <Button
         android:id="@+id/btnLogout"
         android:layout_width="165dp"
         android:layout_height="61dp"
-        android:layout_marginTop="36dp"
-        android:layout_marginEnd="28dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="112dp"
         android:backgroundTint="@android:color/darker_gray"
         android:text="Logout"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/achievement_card" />
-
-    <Button
-        android:id="@+id/btnGoToCarbon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Calculate Carbon Footprint"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnLogout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
