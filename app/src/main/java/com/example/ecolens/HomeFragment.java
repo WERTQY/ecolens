@@ -32,6 +32,8 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        //logout button
         Button btnLogout = view.findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -41,12 +43,5 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        Button btnGoToCarbon = view.findViewById(R.id.btnGoToCarbon);
-        btnGoToCarbon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Navigation.findNavController(v).navigate(R.id.action_homeFragment_to_carbonFootprintFragment);
-            }
-        });
     }
 }

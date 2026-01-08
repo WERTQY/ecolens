@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/homeFragment"
+        android:icon="@drawable/outline_home_24"
+        android:title="Home" />
+
+    <item
+        android:id="@+id/mapFragment"
+        android:icon="@drawable/outline_location_on_24"
+        android:title="Map" />
+
+    <item
+        android:id="@+id/scannerFragment"
+        android:icon="@drawable/baseline_camera_alt_24"
+        android:title="Scan" />
+
+    <item
+        android:id="@+id/encyclopediaFragment"
+        android:icon="@drawable/outline_library_books_24"
+        android:title="Info" />
+
+    <item
+        android:id="@+id/calculatorFragment"
+        android:icon="@drawable/ic_green_footprint"
+        android:title="Calculator" />
+
+</menu>
