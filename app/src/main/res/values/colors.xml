@@ -7,4 +7,9 @@
     <color name="md_theme_onPrimary">#FFFFFF</color>
     <color name="md_theme_primaryContainer">#C8E6C9</color>
     <color name="md_theme_onPrimaryContainer">#0A210A</color>
+
+    <color name="eco_green_primary">#2E7D32</color>
+    <color name="eco_green_light">#A5D6A7</color>
+    <color name="eco_brown">#795548</color>
+    <color name="bg_cream">#F1F8E9</color>
 </resources>

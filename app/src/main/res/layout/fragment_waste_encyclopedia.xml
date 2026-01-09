@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/waste_fragment_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/bg_cream">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -31,14 +32,14 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="?attr/homeAsUpIndicator"
                 app:tint="@android:color/white"
-                android:contentDescription="Go Back"
+                android:contentDescription="@string/go_back"
                 android:layout_gravity="center_vertical|start" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|start"
-                android:text="Waste Encyclopedia"
+                android:text="@string/waste_encyclopedia"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -56,6 +57,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/search_bar_background"
+        android:elevation="6dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="8dp"
@@ -69,8 +71,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:autofillHints=""
             android:background="@null"
-            android:hint="Search item..."
+            android:hint="@string/search_item"
             android:imeOptions="actionSearch"
             android:inputType="textNoSuggestions" />
 
@@ -79,6 +82,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/todo"
             android:src="@drawable/ic_search" />
     </LinearLayout>
 

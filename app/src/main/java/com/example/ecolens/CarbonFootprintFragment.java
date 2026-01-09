@@ -110,6 +110,26 @@ public class CarbonFootprintFragment extends Fragment {
         textViewResult = view.findViewById(R.id.textViewResult);
     }
 
+    // Add this new helper method
+    private void updateCalculateButtonState() {
+        double totalInput = 0;
+
+        // Sum up all current values using your existing getWeight helper
+        totalInput += getWeight(editTextPlastic);
+        totalInput += getWeight(editTextPaper);
+        totalInput += getWeight(editTextAluminium);
+        totalInput += getWeight(editTextGlass);
+        totalInput += getWeight(editTextOrganic);
+
+        // If total > 0, enable the button. Otherwise, disable it.
+        boolean hasValidInput = totalInput > 0;
+
+        buttonCalculate.setEnabled(hasValidInput);
+
+        // Optional: Change the visual opacity (alpha) so user knows it's disabled
+        // 1.0f is fully visible, 0.5f is semi-transparent (dimmed)
+        buttonCalculate.setAlpha(hasValidInput ? 1.0f : 0.5f);
+    }
     private void setupTextWatchers() {
         TextWatcher textWatcher = new TextWatcher() {
             @Override
@@ -122,13 +142,18 @@ public class CarbonFootprintFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
+                // Check inputs every time text changes
+                updateCalculateButtonState();
             }
         };
+
         editTextPlastic.addTextChangedListener(textWatcher);
         editTextPaper.addTextChangedListener(textWatcher);
         editTextAluminium.addTextChangedListener(textWatcher);
         editTextGlass.addTextChangedListener(textWatcher);
         editTextOrganic.addTextChangedListener(textWatcher);
+
+        updateCalculateButtonState();
     }
 
     private void fetchGrossTotal() {
@@ -215,6 +240,15 @@ public class CarbonFootprintFragment extends Fragment {
                             Log.w(TAG, "Set with merge failed: ", e);
                         });
 
+                //SAVE HISTORY (For Diary) ---
+                Map<String, Object> historyEntry = new HashMap<>();
+                historyEntry.put("amount", finalSessionTotal);
+                historyEntry.put("timestamp", com.google.firebase.Timestamp.now()); // Saves current Date & Time
+
+                userImpactDocRef.collection("history")
+                        .add(historyEntry)
+                        .addOnSuccessListener(docRef -> Log.d(TAG, "History saved with ID: " + docRef.getId()))
+                        .addOnFailureListener(e -> Log.w(TAG, "Error saving history", e));
             }).addOnFailureListener(e -> {
                 // This would fail if the user doesn't even have read permission.
                 Log.w(TAG, "Failed to get document before setting data: ", e);
@@ -278,5 +312,7 @@ public class CarbonFootprintFragment extends Fragment {
 
         groupInputs.setVisibility(View.VISIBLE);
         imageViewFootprint.clearAnimation();
+
+        updateCalculateButtonState();
     }
 }

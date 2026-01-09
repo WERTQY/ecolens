@@ -69,10 +69,11 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation("com.google.android.gms:play-services-maps:18.1.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")
-
+    implementation("com.github.prolificinteractive:material-calendarview:2.0.1")
     implementation("com.google.guava:guava:32.0.1-android")
     implementation(libs.datastore.preferences)
     implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation("com.jakewharton.threetenabp:threetenabp:1.3.1")
 
     val camerax_version = "1.3.0"
     implementation("androidx.camera:camera-core:$camerax_version")

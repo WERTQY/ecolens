@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomeFragment">
+    tools:context=".HomeFragment"
+    android:background="@color/bg_cream">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -32,6 +33,7 @@
                 android:layout_width="185dp"
                 android:layout_height="44dp"
                 android:layout_gravity="start|center_vertical"
+                android:contentDescription="@string/todo"
                 android:src="@drawable/ecolens_transparent_background" />
 
             <ImageButton
@@ -41,6 +43,7 @@
                 android:layout_gravity="end|center_vertical"
                 android:layout_marginEnd="16dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/todo"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_person"
                 app:tint="@android:color/white" />
@@ -58,7 +61,7 @@
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/denk_one"
         android:gravity="center"
-        android:text="Welcome username!"
+        android:text="@string/welcome_username"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="48sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -86,8 +89,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Total Carbon Footprint Saved"
+                android:text="@string/total_carbon_footprint_saved"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                android:textSize="22sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -99,7 +103,7 @@
                 android:layout_height="88dp"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/frank_ruhl_libre_medium"
-                android:text="00.00"
+                android:text="@string/_00_00"
                 android:textAlignment="center"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="70sp"
@@ -116,7 +120,7 @@
                 android:layout_height="36dp"
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/frank_ruhl_libre_medium"
-                android:text="kg CO₂e"
+                android:text="@string/kg_co_e"
                 android:textAlignment="center"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="30sp"
@@ -132,7 +136,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/achievement_card"
         android:layout_width="355dp"
-        android:layout_height="130dp"
+        android:layout_height="215dp"
         android:layout_marginTop="20dp"
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp"
@@ -145,32 +149,76 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/userAchievement"
+                android:id="@+id/tvAchievementTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Your Current Achievement"
+                android:text="@string/your_current_achievement"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                android:textSize="22sp"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.148" />
+                app:layout_constraintVertical_bias="0.091" />
+
+            <TextView
+                android:id="@+id/tvStreak"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/_0_day_streak"
+                android:textColor="#FF5722"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.857" />
+
+            <ImageView
+                android:id="@+id/imgTrophy"
+                android:layout_width="54dp"
+                android:layout_height="47dp"
+                android:layout_marginStart="28dp"
+                android:contentDescription="@string/todo"
+                android:src="@drawable/ic_trophy"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvAchievementTitle"
+                app:layout_constraintVertical_bias="0.305" />
+
+            <TextView
+                android:id="@+id/tvTierName"
+                android:layout_width="149dp"
+                android:layout_height="31dp"
+                android:layout_marginStart="4dp"
+                android:text="@string/loading"
+                android:textColor="@color/eco_green_primary"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/imgTrophy"
+                app:layout_constraintStart_toEndOf="@+id/imgTrophy"
+                app:layout_constraintTop_toTopOf="@+id/imgTrophy"
+                app:layout_constraintVertical_bias="0.411" />
+
+            <Button
+                android:id="@+id/btnDiary"
+                android:layout_width="92dp"
+                android:layout_height="54dp"
+                android:layout_marginEnd="15dp"
+                android:text="@string/diary"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.888"
+                app:layout_constraintStart_toEndOf="@+id/tvTierName"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.472" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
-
-    <Button
-        android:id="@+id/btnLogout"
-        android:layout_width="165dp"
-        android:layout_height="61dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="112dp"
-        android:backgroundTint="@android:color/darker_gray"
-        android:text="Logout"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/achievement_card" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
