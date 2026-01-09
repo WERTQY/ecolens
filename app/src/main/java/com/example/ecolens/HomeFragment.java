@@ -12,8 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.google.firebase.auth.FirebaseAuth;
-
 public class HomeFragment extends Fragment {
 
     @Override
@@ -32,13 +30,9 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Button btnLogout = view.findViewById(R.id.btnLogout);
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FirebaseAuth.getInstance().signOut();
-                Navigation.findNavController(view).navigate(R.id.loginFragment);
-            }
+        Button btnGoToProfile = view.findViewById(R.id.btnGoToProfile);
+        btnGoToProfile.setOnClickListener(v -> {
+            Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_profileFragment);
         });
 
     }

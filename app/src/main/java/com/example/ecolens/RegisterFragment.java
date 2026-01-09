@@ -15,24 +15,22 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class RegisterFragment extends Fragment {
 
-    TextInputEditText etEmail, etPassword, etConfirmPassword, etUsername;
-    Button btnRegister;
-    TextView tvLogin;
-    FirebaseAuth mAuth;
-    DatabaseReference mDatabase;
+    private TextInputEditText etEmail, etPassword, etConfirmPassword, etUsername;
+    private Button btnRegister;
+    private TextView tvLogin;
+    private FirebaseAuth mAuth;
+    private DatabaseReference mDatabase;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,73 +58,63 @@ public class RegisterFragment extends Fragment {
         tvLogin = view.findViewById(R.id.tvLogin);
 
 
-        tvLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Navigation.findNavController(view).navigate(R.id.action_registerFragment_to_loginFragment);
+        tvLogin.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_registerFragment_to_loginFragment));
+
+        btnRegister.setOnClickListener(v -> {
+            String username, email, password, confirmPassword;
+            username = String.valueOf(etUsername.getText());
+            email = String.valueOf(etEmail.getText());
+            password = String.valueOf(etPassword.getText());
+            confirmPassword = String.valueOf(etConfirmPassword.getText());
+
+            if (TextUtils.isEmpty(username)) {
+                Toast.makeText(view.getContext(), "Enter Username", Toast.LENGTH_SHORT).show();
+                return;
             }
-        });
 
-        btnRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String username, email, password, confirmPassword;
-                username = String.valueOf(etUsername.getText());
-                email = String.valueOf(etEmail.getText());
-                password = String.valueOf(etPassword.getText());
-                confirmPassword = String.valueOf(etConfirmPassword.getText());
+            if (TextUtils.isEmpty(email)) {
+                Toast.makeText(view.getContext(), "Enter Email", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-                if(TextUtils.isEmpty(username)) {
-                    Toast.makeText(view.getContext(), "Enter Username", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+            if (TextUtils.isEmpty(password)) {
+                Toast.makeText(view.getContext(), "Enter Password", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-                if(TextUtils.isEmpty(email)) {
-                    Toast.makeText(view.getContext(), "Enter Email", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+            if (!TextUtils.equals(password, confirmPassword)) {
+                Toast.makeText(view.getContext(), "Password Not The Same", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-                if(TextUtils.isEmpty(password)) {
-                    Toast.makeText(view.getContext(), "Enter Password", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                            if (firebaseUser != null) {
+                                String userId = firebaseUser.getUid();
 
-                if(!TextUtils.equals(password, confirmPassword)) {
-                    Toast.makeText(view.getContext(), "Password Not The Same", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                                User newUser = new User(username, email, 0, 0, new ArrayList<>(), null);
 
-                mAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                                    String userId = firebaseUser.getUid();
-
-                                    User newUser = new User(username, email, 0, 0, new ArrayList<>());
-
-                                    mDatabase.child("users").child(userId).setValue(newUser)
-                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> dbTask) {
-                                                    if (dbTask.isSuccessful()) {
-                                                        Toast.makeText(view.getContext(), "Account created.",
-                                                                Toast.LENGTH_SHORT).show();
-                                                        Navigation.findNavController(view).navigate(R.id.action_registerFragment_to_homeFragment);
-                                                    } else {
-                                                        Toast.makeText(view.getContext(), "Database error: " + dbTask.getException().getMessage(),
-                                                                Toast.LENGTH_LONG).show();
-                                                    }
-                                                }
-                                            });
-                                } else {
-                                    Toast.makeText(view.getContext(), "Authentication failed: " + task.getException().getMessage(),
-                                            Toast.LENGTH_LONG).show();
-                                }
+                                mDatabase.child("users").child(userId).setValue(newUser)
+                                        .addOnCompleteListener(dbTask -> {
+                                            if (dbTask.isSuccessful()) {
+                                                Toast.makeText(view.getContext(), "Account created.",
+                                                        Toast.LENGTH_SHORT).show();
+                                                Navigation.findNavController(view).navigate(R.id.action_registerFragment_to_homeFragment);
+                                            } else {
+                                                String errorMessage = dbTask.getException() != null ? dbTask.getException().getMessage() : "Unknown database error";
+                                                Toast.makeText(view.getContext(), "Database error: " + errorMessage,
+                                                        Toast.LENGTH_LONG).show();
+                                            }
+                                        });
                             }
-                        });
-            }
+                        } else {
+                            String errorMessage = task.getException() != null ? task.getException().getMessage() : "Unknown authentication error";
+                            Toast.makeText(view.getContext(), "Authentication failed: " + errorMessage,
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    });
         });
 
 

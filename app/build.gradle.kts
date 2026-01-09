@@ -43,6 +43,13 @@ dependencies {
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
     implementation(libs.fragment)
+
+    // Add these lines for Firebase and Image Loading
+    implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+    implementation("com.google.firebase:firebase-database")
+    implementation("com.google.firebase:firebase-storage")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
