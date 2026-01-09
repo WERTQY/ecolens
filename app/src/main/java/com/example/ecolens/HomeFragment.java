@@ -18,12 +18,15 @@ import android.view.animation.DecelerateInterpolator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Calendar;
 
 public class HomeFragment extends Fragment {
 
     private TextView carbonFootPrintTextView;
+    private TextView welcomeMsg;
+    private TextView greetingMsg;
     private FirebaseFirestore db;
     private FirebaseAuth auth;
 
@@ -48,7 +51,10 @@ public class HomeFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
+        welcomeMsg = view.findViewById(R.id.usernameDisplay);
+        greetingMsg = view.findViewById(R.id.greetingsDisplay);
         carbonFootPrintTextView = view.findViewById(R.id.carbon_footprint_value);
+        fetchUserData();
         fetchAndAnimateCarbonFootprint();
 
 
@@ -64,6 +70,32 @@ public class HomeFragment extends Fragment {
 
     }
 
+    private void fetchUserData() {
+        FirebaseUser currentUser = auth.getCurrentUser();
+
+        if (currentUser != null) {
+            String uid = currentUser.getUid();
+
+            // Read from the "users" collection
+            db.collection("users").document(uid).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            String name = documentSnapshot.getString("name");
+
+                            // Update the TextView
+                            if (name != null) {
+                                greetingMsg.setText(getGreeting());
+                                welcomeMsg.setText(name);
+                            }
+                        } else {
+                            Log.d("HomeFragment", "No such document");
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.d("HomeFragment", "get failed with ", e);
+                    });
+        }
+    }
     private void fetchAndAnimateCarbonFootprint() {
         FirebaseUser user = auth.getCurrentUser();
 
@@ -101,5 +133,18 @@ public class HomeFragment extends Fragment {
             }
         });
         animator.start();
+    }
+    private String getGreeting(){
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        if (hour >= 5 && hour < 12) {
+            return "Good Morning,";
+        } else if (hour >= 12 && hour < 17) {
+            return "Good Afternoon,";
+        } else if (hour >= 17 && hour < 21) {
+            return "Good Evening,";
+        } else {
+            return "Good Night,";
+        }
     }
 }

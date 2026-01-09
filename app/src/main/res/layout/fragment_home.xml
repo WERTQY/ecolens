@@ -50,21 +50,17 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <TextView
-        android:id="@+id/welcomeMsg"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:fontFamily="@font/denk_one"
+        android:id="@+id/usernameDisplay"
+        android:layout_width="373dp"
+        android:layout_height="78dp"
+        android:fontFamily="@font/frank_ruhl_libre_medium"
         android:gravity="center"
-        android:text="Welcome username!"
+        android:text="UserName"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="48sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+        app:layout_constraintEnd_toEndOf="@+id/greetingsDisplay"
+        app:layout_constraintStart_toStartOf="@+id/greetingsDisplay"
+        app:layout_constraintTop_toBottomOf="@+id/greetingsDisplay" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/carbon_footprint_card"
@@ -73,9 +69,9 @@
         android:layout_marginTop="20dp"
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp"
-        app:layout_constraintEnd_toEndOf="@+id/welcomeMsg"
-        app:layout_constraintStart_toStartOf="@+id/welcomeMsg"
-        app:layout_constraintTop_toBottomOf="@+id/welcomeMsg">
+        app:layout_constraintEnd_toEndOf="@+id/usernameDisplay"
+        app:layout_constraintStart_toStartOf="@+id/usernameDisplay"
+        app:layout_constraintTop_toBottomOf="@+id/usernameDisplay">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -142,7 +138,10 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent">
 
             <TextView
                 android:id="@+id/userAchievement"
@@ -172,5 +171,19 @@
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/achievement_card" />
+
+    <TextView
+        android:id="@+id/greetingsDisplay"
+        android:layout_width="273dp"
+        android:layout_height="27dp"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/frank_ruhl_libre_medium"
+        android:text="Welcome!"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
