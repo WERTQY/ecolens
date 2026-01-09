@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.camera.core.CameraSelector;
-import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -84,7 +82,7 @@ public class ScannerFragment extends Fragment {
         cameraExecutor = Executors.newSingleThreadExecutor();
 
         //toolbar back to home
-        View backButton = view.findViewById(R.id.btn_back_manual);
+        View backButton = view.findViewById(R.id.btn_back_map);
         backButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigateUp();
         });
