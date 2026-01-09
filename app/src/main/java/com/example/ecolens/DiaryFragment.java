@@ -1,32 +1,43 @@
 package com.example.ecolens;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
+// --- CRITICAL IMPORTS FOR VERSION 2.0.1 ---
+import com.jakewharton.threetenabp.AndroidThreeTen;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
+import org.threeten.bp.format.DateTimeFormatter;
+// ------------------------------------------
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 
 public class DiaryFragment extends Fragment {
 
-    private RecyclerView recyclerView;
-    private DiaryAdapter adapter;
-    private List<DiaryEntry> diaryList = new ArrayList<>();
+    private MaterialCalendarView calendarView;
+    private TextView tvSelectedDate, tvDayTotal;
+
+    // Stores the total for each day
+    private Map<CalendarDay, Double> dailyTotals = new HashMap<>();
 
     @Nullable
     @Override
@@ -38,14 +49,36 @@ public class DiaryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        recyclerView = view.findViewById(R.id.calendarView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        // 1. Initialize the Date Library (REQUIRED for v2.0.1)
+        AndroidThreeTen.init(requireContext());
 
-        // Setup Adapter
-        adapter = new DiaryAdapter(diaryList);
-        recyclerView.setAdapter(adapter);
+        // 2. Bind Views
+        calendarView = view.findViewById(R.id.calendarView);
+        tvSelectedDate = view.findViewById(R.id.tvSelectedDate);
+        tvDayTotal = view.findViewById(R.id.tvDayTotal);
 
-        // Load Data
+        // 3. Set Default Date Text (Using new Formatter)
+        tvSelectedDate.setText("Select a date");
+
+        // 4. Handle Date Clicks
+        calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
+            @Override
+            public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
+                // Formatting the date using ThreeTen formatter
+                String dateText = date.getDate().format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
+                tvSelectedDate.setText(dateText);
+
+                // Show total
+                Double total = dailyTotals.get(date);
+                if (total != null) {
+                    tvDayTotal.setText(String.format("Total Saved: %.2f kg", total));
+                } else {
+                    tvDayTotal.setText("Total Saved: 0.00 kg");
+                }
+            }
+        });
+
+        // 5. Load Data
         loadHistory();
     }
 
@@ -57,71 +90,45 @@ public class DiaryFragment extends Fragment {
                 .collection("impact_tracker")
                 .document(uid)
                 .collection("history")
-                .orderBy("timestamp", Query.Direction.DESCENDING) // Show newest first
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
-                    diaryList.clear();
+                    dailyTotals.clear();
+                    HashSet<CalendarDay> activeDays = new HashSet<>();
+
+                    // Helper calendar to extract day/month/year from Firebase Date
+                    java.util.Calendar cal = java.util.Calendar.getInstance();
+
                     for (QueryDocumentSnapshot doc : querySnapshot) {
-                        // Manual mapping to ensure safety
-                        if (doc.contains("amount") && doc.contains("timestamp")) {
-                            double amount = doc.getDouble("amount");
+                        if (doc.contains("timestamp") && doc.contains("amount")) {
                             Timestamp ts = doc.getTimestamp("timestamp");
-                            diaryList.add(new DiaryEntry(amount, ts));
+                            Double amount = doc.getDouble("amount");
+
+                            if (ts != null && amount != null) {
+                                // Convert Timestamp to Java Date
+                                Date date = ts.toDate();
+                                cal.setTime(date);
+
+                                // Extract parts
+                                int year = cal.get(java.util.Calendar.YEAR);
+                                int month = cal.get(java.util.Calendar.MONTH) + 1; // Fix: Add 1 because Library expects 1-12
+                                int day = cal.get(java.util.Calendar.DAY_OF_MONTH);
+
+                                // Create CalendarDay
+                                CalendarDay calendarDay = CalendarDay.from(year, month, day);
+                                activeDays.add(calendarDay);
+
+                                // Add to total
+                                double currentTotal = dailyTotals.containsKey(calendarDay) ? dailyTotals.get(calendarDay) : 0.0;
+                                dailyTotals.put(calendarDay, currentTotal + amount);
+                            }
                         }
                     }
-                    adapter.notifyDataSetChanged();
-                });
-    }
 
-    // --- Simple Data Class ---
-    public static class DiaryEntry {
-        double amount;
-        Timestamp timestamp;
-
-        public DiaryEntry(double amount, Timestamp timestamp) {
-            this.amount = amount;
-            this.timestamp = timestamp;
-        }
-    }
-
-    // --- Simple Adapter ---
-    public static class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> {
-        private List<DiaryEntry> list;
-
-        public DiaryAdapter(List<DiaryEntry> list) { this.list = list; }
-
-        @NonNull @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            // Using simple android layout to save time, or you can create a custom row xml
-            View v = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_list_item_2, parent, false);
-            return new ViewHolder(v);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            DiaryEntry entry = list.get(position);
-
-            // Format Date
-            String dateStr = "Unknown Date";
-            if (entry.timestamp != null) {
-                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault());
-                dateStr = sdf.format(entry.timestamp.toDate());
-            }
-
-            holder.text1.setText(String.format("Saved: %.2f kg CO2e", entry.amount));
-            holder.text2.setText(dateStr);
-        }
-
-        @Override
-        public int getItemCount() { return list.size(); }
-
-        static class ViewHolder extends RecyclerView.ViewHolder {
-            TextView text1, text2;
-            ViewHolder(View v) {
-                super(v);
-                text1 = v.findViewById(android.R.id.text1);
-                text2 = v.findViewById(android.R.id.text2);
-            }
-        }
+                    // Add the Leaf Icons
+                    if (getContext() != null) {
+                        calendarView.addDecorator(new EventDecorator(getContext(), activeDays));
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("DiaryFragment", "Error loading history", e));
     }
 }
