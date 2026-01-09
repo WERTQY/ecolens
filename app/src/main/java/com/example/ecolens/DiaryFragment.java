@@ -17,18 +17,16 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-// --- CRITICAL IMPORTS FOR VERSION 2.0.1 ---
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
+import com.prolificinteractive.materialcalendarview.OnMonthChangedListener;
 import org.threeten.bp.format.DateTimeFormatter;
-// ------------------------------------------
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Map;
 
 public class DiaryFragment extends Fragment {
@@ -38,6 +36,9 @@ public class DiaryFragment extends Fragment {
 
     // Stores the total for each day
     private Map<CalendarDay, Double> dailyTotals = new HashMap<>();
+
+    // To handle the "toggle" logic
+    private CalendarDay lastSelectedDate = null;
 
     @Nullable
     @Override
@@ -49,37 +50,68 @@ public class DiaryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Initialize the Date Library (REQUIRED for v2.0.1)
         AndroidThreeTen.init(requireContext());
 
-        // 2. Bind Views
         calendarView = view.findViewById(R.id.calendarView);
         tvSelectedDate = view.findViewById(R.id.tvSelectedDate);
         tvDayTotal = view.findViewById(R.id.tvDayTotal);
 
-        // 3. Set Default Date Text (Using new Formatter)
-        tvSelectedDate.setText("Select a date");
-
-        // 4. Handle Date Clicks
+        // 1. Handle Date Clicks (Toggle Logic)
         calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
-                // Formatting the date using ThreeTen formatter
-                String dateText = date.getDate().format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
-                tvSelectedDate.setText(dateText);
+                // If clicking the same date again -> Unselect it
+                if (lastSelectedDate != null && lastSelectedDate.equals(date)) {
+                    widget.clearSelection();
+                    lastSelectedDate = null;
 
-                // Show total
-                Double total = dailyTotals.get(date);
-                if (total != null) {
-                    tvDayTotal.setText(String.format("Total Saved: %.2f kg", total));
+                    // Show Month Total instead
+                    updateMonthlyTotal(widget.getCurrentDate());
                 } else {
-                    tvDayTotal.setText("Total Saved: 0.00 kg");
+                    // New date selected
+                    lastSelectedDate = date;
+                    widget.setDateSelected(date, true);
+
+                    // Show Daily Total
+                    String dateText = date.getDate().format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
+                    tvSelectedDate.setText(dateText);
+
+                    Double total = dailyTotals.get(date);
+                    tvDayTotal.setText(String.format("Daily Saved: %.2f kg", (total != null ? total : 0.0)));
                 }
             }
         });
 
-        // 5. Load Data
+        // 2. Handle Swiping to a New Month
+        calendarView.setOnMonthChangedListener(new OnMonthChangedListener() {
+            @Override
+            public void onMonthChanged(MaterialCalendarView widget, CalendarDay date) {
+                // If no specific day is selected, show the new month's total
+                if (widget.getSelectedDates().isEmpty()) {
+                    updateMonthlyTotal(date);
+                }
+            }
+        });
+
         loadHistory();
+    }
+
+    // --- NEW HELPER FUNCTION ---
+    private void updateMonthlyTotal(CalendarDay month) {
+        double monthTotal = 0.0;
+
+        // Loop through all data to find matches for this month/year
+        for (Map.Entry<CalendarDay, Double> entry : dailyTotals.entrySet()) {
+            CalendarDay dataDate = entry.getKey();
+            if (dataDate.getYear() == month.getYear() && dataDate.getMonth() == month.getMonth()) {
+                monthTotal += entry.getValue();
+            }
+        }
+
+        // Format: "January 2026"
+        String monthText = month.getDate().format(DateTimeFormatter.ofPattern("MMMM yyyy"));
+        tvSelectedDate.setText(monthText + " Total Save :");
+        tvDayTotal.setText(String.format("%.2f kg CO2e", monthTotal));
     }
 
     private void loadHistory() {
@@ -94,8 +126,6 @@ public class DiaryFragment extends Fragment {
                 .addOnSuccessListener(querySnapshot -> {
                     dailyTotals.clear();
                     HashSet<CalendarDay> activeDays = new HashSet<>();
-
-                    // Helper calendar to extract day/month/year from Firebase Date
                     java.util.Calendar cal = java.util.Calendar.getInstance();
 
                     for (QueryDocumentSnapshot doc : querySnapshot) {
@@ -104,30 +134,29 @@ public class DiaryFragment extends Fragment {
                             Double amount = doc.getDouble("amount");
 
                             if (ts != null && amount != null) {
-                                // Convert Timestamp to Java Date
                                 Date date = ts.toDate();
                                 cal.setTime(date);
 
-                                // Extract parts
                                 int year = cal.get(java.util.Calendar.YEAR);
-                                int month = cal.get(java.util.Calendar.MONTH) + 1; // Fix: Add 1 because Library expects 1-12
+                                int month = cal.get(java.util.Calendar.MONTH) + 1;
                                 int day = cal.get(java.util.Calendar.DAY_OF_MONTH);
 
-                                // Create CalendarDay
                                 CalendarDay calendarDay = CalendarDay.from(year, month, day);
                                 activeDays.add(calendarDay);
 
-                                // Add to total
                                 double currentTotal = dailyTotals.containsKey(calendarDay) ? dailyTotals.get(calendarDay) : 0.0;
                                 dailyTotals.put(calendarDay, currentTotal + amount);
                             }
                         }
                     }
 
-                    // Add the Leaf Icons
                     if (getContext() != null) {
                         calendarView.addDecorator(new EventDecorator(getContext(), activeDays));
                     }
+
+                    // Show current month total immediately after loading
+                    updateMonthlyTotal(calendarView.getCurrentDate());
+
                 })
                 .addOnFailureListener(e -> Log.e("DiaryFragment", "Error loading history", e));
     }

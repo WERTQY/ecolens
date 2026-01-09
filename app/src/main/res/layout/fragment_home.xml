@@ -174,46 +174,46 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.757" />
+                app:layout_constraintVertical_bias="0.857" />
 
             <ImageView
-                android:id="@+id/imgTierBadge"
-                android:layout_width="28dp"
-                android:layout_height="29dp"
-                android:layout_marginStart="32dp"
-                android:src="@drawable/ic_launcher_background"
+                android:id="@+id/imgTrophy"
+                android:layout_width="54dp"
+                android:layout_height="47dp"
+                android:layout_marginStart="28dp"
+                android:src="@drawable/ic_trophy"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvAchievementTitle"
-                app:layout_constraintVertical_bias="0.197" />
+                app:layout_constraintVertical_bias="0.305" />
 
             <TextView
                 android:id="@+id/tvTierName"
-                android:layout_width="96dp"
+                android:layout_width="149dp"
                 android:layout_height="31dp"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="4dp"
                 android:text="@string/loading"
                 android:textColor="@color/eco_green_primary"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/imgTierBadge"
-                app:layout_constraintStart_toEndOf="@+id/imgTierBadge"
-                app:layout_constraintTop_toTopOf="@+id/imgTierBadge"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintBottom_toBottomOf="@+id/imgTrophy"
+                app:layout_constraintStart_toEndOf="@+id/imgTrophy"
+                app:layout_constraintTop_toTopOf="@+id/imgTrophy"
+                app:layout_constraintVertical_bias="0.411" />
 
             <Button
                 android:id="@+id/btnDiary"
-                android:layout_width="81dp"
-                android:layout_height="37dp"
-                android:layout_marginEnd="16dp"
+                android:layout_width="92dp"
+                android:layout_height="54dp"
+                android:layout_marginEnd="15dp"
                 android:text="@string/diary"
-                android:textSize="10sp"
+                android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintHorizontal_bias="0.888"
                 app:layout_constraintStart_toEndOf="@+id/tvTierName"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.404" />
+                app:layout_constraintVertical_bias="0.472" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

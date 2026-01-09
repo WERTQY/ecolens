@@ -19,7 +19,6 @@ import android.view.animation.DecelerateInterpolator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
@@ -56,7 +55,7 @@ public class HomeFragment extends Fragment {
         //initialize firebase
         tvTierName = view.findViewById(R.id.tvTierName);
         tvStreak = view.findViewById(R.id.tvStreak);
-        imgTierBadge = view.findViewById(R.id.imgTierBadge);
+        imgTierBadge = view.findViewById(R.id.imgTrophy);
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
