@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,7 +34,7 @@ public class DiaryFragment extends Fragment {
     private TextView tvSelectedDate, tvDayTotal;
 
     // Stores the total for each day
-    private Map<CalendarDay, Double> dailyTotals = new HashMap<>();
+    private final Map<CalendarDay, Double> dailyTotals = new HashMap<>();
 
     // To handle the "toggle" logic
     private CalendarDay lastSelectedDate = null;
@@ -77,7 +76,7 @@ public class DiaryFragment extends Fragment {
                     tvSelectedDate.setText(dateText);
 
                     Double total = dailyTotals.get(date);
-                    tvDayTotal.setText(String.format("Daily Saved: %.2f kg", (total != null ? total : 0.0)));
+                    tvDayTotal.setText(String.format("Daily Saved: %.2f kg CO₂e", (total != null ? total : 0.0)));
                 }
             }
         });
@@ -110,8 +109,8 @@ public class DiaryFragment extends Fragment {
 
         // Format: "January 2026"
         String monthText = month.getDate().format(DateTimeFormatter.ofPattern("MMMM yyyy"));
-        tvSelectedDate.setText(monthText + " Total Save :");
-        tvDayTotal.setText(String.format("%.2f kg CO2e", monthTotal));
+        tvSelectedDate.setText(monthText);
+        tvDayTotal.setText(String.format("Total Saved: %.2f kg CO₂e", monthTotal));
     }
 
     private void loadHistory() {
@@ -144,7 +143,7 @@ public class DiaryFragment extends Fragment {
                                 CalendarDay calendarDay = CalendarDay.from(year, month, day);
                                 activeDays.add(calendarDay);
 
-                                double currentTotal = dailyTotals.containsKey(calendarDay) ? dailyTotals.get(calendarDay) : 0.0;
+                                double currentTotal = dailyTotals.getOrDefault(calendarDay, 0.0);
                                 dailyTotals.put(calendarDay, currentTotal + amount);
                             }
                         }
