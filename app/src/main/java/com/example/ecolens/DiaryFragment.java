@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,6 +49,14 @@ public class DiaryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        //appbar back button
+        View backButton = view.findViewById(R.id.btn_back_manual);
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> {
+                Navigation.findNavController(view).navigateUp();
+            });
+        }
 
         AndroidThreeTen.init(requireContext());
 

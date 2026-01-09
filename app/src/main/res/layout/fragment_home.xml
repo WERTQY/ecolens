@@ -47,38 +47,48 @@
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_person"
                 app:tint="@android:color/white" />
-
         </FrameLayout>
-
     </com.google.android.material.appbar.AppBarLayout>
 
     <TextView
-        android:id="@+id/welcomeMsg"
-        android:layout_width="0dp"
+        android:id="@+id/greetingsDisplay"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:fontFamily="@font/denk_one"
-        android:gravity="center"
-        android:text="@string/welcome_username"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textSize="48sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/frank_ruhl_libre_medium"
+        android:text="Good Morning,"
+        android:textColor="#555555"
+        android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
 
+    <TextView
+        android:id="@+id/usernameDisplay"
+        android:layout_width="377dp"
+        android:layout_height="83dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/frank_ruhl_libre_medium"
+        android:text="@string/loading"
+        android:textAlignment="viewStart"
+        android:textColor="#000000"
+        android:textSize="50sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/greetingsDisplay" />
+
     <androidx.cardview.widget.CardView
         android:id="@+id/carbon_footprint_card"
-        android:layout_width="355dp"
+        android:layout_width="0dp"
         android:layout_height="157dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="16dp"
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp"
-        app:layout_constraintEnd_toEndOf="@+id/welcomeMsg"
-        app:layout_constraintStart_toStartOf="@+id/welcomeMsg"
-        app:layout_constraintTop_toBottomOf="@+id/welcomeMsg">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/usernameDisplay"
+        app:layout_constraintTop_toBottomOf="@+id/usernameDisplay">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -99,8 +109,8 @@
 
             <TextView
                 android:id="@+id/carbon_footprint_value"
-                android:layout_width="216dp"
-                android:layout_height="88dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/frank_ruhl_libre_medium"
                 android:text="@string/_00_00"
@@ -109,15 +119,15 @@
                 android:textSize="70sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/carbon_footprint_unit"
-                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/carbon_footprint_title"
                 app:layout_constraintVertical_bias="0.0" />
 
             <TextView
                 android:id="@+id/carbon_footprint_unit"
-                android:layout_width="115dp"
-                android:layout_height="36dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/frank_ruhl_libre_medium"
                 android:text="@string/kg_co_e"
@@ -135,13 +145,15 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/achievement_card"
-        android:layout_width="355dp"
+        android:layout_width="0dp"
         android:layout_height="215dp"
         android:layout_marginTop="20dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp"
-        app:layout_constraintEnd_toEndOf="@+id/carbon_footprint_card"
-        app:layout_constraintStart_toStartOf="@+id/carbon_footprint_card"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/carbon_footprint_card">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -191,31 +203,27 @@
 
             <TextView
                 android:id="@+id/tvTierName"
-                android:layout_width="149dp"
-                android:layout_height="31dp"
-                android:layout_marginStart="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:text="@string/loading"
                 android:textColor="@color/eco_green_primary"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/imgTrophy"
                 app:layout_constraintStart_toEndOf="@+id/imgTrophy"
-                app:layout_constraintTop_toTopOf="@+id/imgTrophy"
-                app:layout_constraintVertical_bias="0.411" />
+                app:layout_constraintTop_toTopOf="@+id/imgTrophy" />
 
             <Button
                 android:id="@+id/btnDiary"
-                android:layout_width="92dp"
-                android:layout_height="54dp"
-                android:layout_marginEnd="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
                 android:text="@string/diary"
-                android:textSize="15sp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/imgTrophy"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.888"
-                app:layout_constraintStart_toEndOf="@+id/tvTierName"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.472" />
+                app:layout_constraintTop_toTopOf="@+id/imgTrophy" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
