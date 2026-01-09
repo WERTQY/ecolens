@@ -90,6 +90,7 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/total_carbon_footprint_saved"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                android:textSize="22sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -134,7 +135,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/achievement_card"
         android:layout_width="355dp"
-        android:layout_height="130dp"
+        android:layout_height="215dp"
         android:layout_marginTop="20dp"
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp"
@@ -153,71 +154,69 @@
                 android:gravity="center"
                 android:text="@string/your_current_achievement"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                android:textSize="22sp"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.305" />
+                app:layout_constraintVertical_bias="0.091" />
 
             <TextView
                 android:id="@+id/tvStreak"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/_0_day_streak"
-                android:textSize="14sp"
                 android:textColor="#FF5722"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.757" />
 
             <ImageView
                 android:id="@+id/imgTierBadge"
                 android:layout_width="28dp"
                 android:layout_height="29dp"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="32dp"
                 android:src="@drawable/ic_launcher_background"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvAchievementTitle"
-                app:layout_constraintVertical_bias="0.56" />
+                app:layout_constraintVertical_bias="0.197" />
 
             <TextView
                 android:id="@+id/tvTierName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_width="96dp"
+                android:layout_height="31dp"
+                android:layout_marginStart="12dp"
                 android:text="@string/loading"
+                android:textColor="@color/eco_green_primary"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="@color/eco_green_primary"
                 app:layout_constraintBottom_toBottomOf="@+id/imgTierBadge"
                 app:layout_constraintStart_toEndOf="@+id/imgTierBadge"
-                app:layout_constraintTop_toTopOf="@+id/imgTierBadge" />
+                app:layout_constraintTop_toTopOf="@+id/imgTierBadge"
+                app:layout_constraintVertical_bias="0.0" />
 
             <Button
                 android:id="@+id/btnDiary"
                 android:layout_width="81dp"
                 android:layout_height="37dp"
-                android:layout_marginEnd="12dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="16dp"
                 android:text="@string/diary"
                 android:textSize="10sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/tvTierName"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.404" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
-
-    <Button
-        android:id="@+id/btnLogout"
-        android:layout_width="165dp"
-        android:layout_height="61dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="112dp"
-        android:backgroundTint="@android:color/darker_gray"
-        android:text="@string/logout"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/achievement_card" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
