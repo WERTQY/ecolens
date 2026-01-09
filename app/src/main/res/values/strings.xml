@@ -38,4 +38,5 @@
     <string name="footprint_icon">Footprint Icon</string>
     <string name="current_saved_0_kg_co_e">Current Saved: 0 kg CO₂e</string>
     <string name="ok">OK</string>
+    <string name="search">Search</string>
 </resources>
