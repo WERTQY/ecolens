@@ -41,6 +41,8 @@ public class ScannerFragment extends Fragment {
     private TextView binInstructionText;
     private TextView confidenceText;
     private Button closeButton;
+
+    private GarbageDetector garbageDetector;
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
@@ -67,7 +69,7 @@ public class ScannerFragment extends Fragment {
         confidenceText = view.findViewById(R.id.scanner_confidence_text);
         closeButton = view.findViewById(R.id.scanner_btn_close);
         MaterialToolbar toolbar = view.findViewById(R.id.scan_toolbar);
-        GarbageDetector garbageDetector = new GarbageDetector(this.getContext());
+        garbageDetector = new GarbageDetector(this.getContext());
 
         //toolbar back to home
         View backButton = view.findViewById(R.id.btn_back_manual);
@@ -75,11 +77,12 @@ public class ScannerFragment extends Fragment {
             Navigation.findNavController(view).navigateUp();
         });
 
-        // Capture button (Dummy Logic)
+        /*
         captureButton.setOnClickListener(v -> {
 
             showPopup("Plastic", "Orange", 99);
         });
+        */
 
         // Close button for the popup
         closeButton.setOnClickListener(v -> {
