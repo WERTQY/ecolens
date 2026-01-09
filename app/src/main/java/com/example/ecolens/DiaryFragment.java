@@ -38,7 +38,7 @@ public class DiaryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        recyclerView = view.findViewById(R.id.recyclerDiary);
+        recyclerView = view.findViewById(R.id.calendarView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // Setup Adapter
