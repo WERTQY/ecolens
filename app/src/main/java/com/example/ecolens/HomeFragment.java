@@ -64,15 +64,15 @@ public class HomeFragment extends Fragment {
         fetchAndAnimateCarbonFootprint();
 
 
-        //logout button
-        Button btnLogout = view.findViewById(R.id.btnLogout);
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FirebaseAuth.getInstance().signOut();
-                Navigation.findNavController(view).navigate(R.id.loginFragment);
-            }
-        });
+        //logout button will be reuse in the profile part
+//        Button btnLogout = view.findViewById(R.id.btnLogout);
+//        btnLogout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                FirebaseAuth.getInstance().signOut();
+//                Navigation.findNavController(view).navigate(R.id.loginFragment);
+//            }
+//        });
 
         //diary log button
         Button btnDiary = view.findViewById(R.id.btnDiary);
