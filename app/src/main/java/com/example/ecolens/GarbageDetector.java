@@ -34,18 +34,17 @@ public class GarbageDetector {
         }
     }
 
-    public List<Detection> detect(Bitmap bitmap, int rotation) {
+    public List<Detection> detect(Bitmap bitmap) {
         if (objectDetector == null) {
             setupDetector();
         }
-
-        // prepare the image
+        /*
         ImageProcessor imageProcessor = new ImageProcessor.Builder()
-                .add(new Rot90Op(-rotation / 90)) // handle rotation
+                .add(new org.tensorflow.lite.support.image.ops.Rot90Op(-rotation / 90))
                 .build();
-
+        */
         TensorImage tensorImage = TensorImage.fromBitmap(bitmap);
-        tensorImage = imageProcessor.process(tensorImage);
+        //tensorImage = imageProcessor.process(tensorImage);
 
         // run detection
         return objectDetector.detect(tensorImage);

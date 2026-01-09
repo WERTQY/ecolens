@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -29,7 +31,12 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.tensorflow.lite.task.vision.detector.Detection;
+
+import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ScannerFragment extends Fragment {
 
@@ -43,6 +50,8 @@ public class ScannerFragment extends Fragment {
     private Button closeButton;
 
     private GarbageDetector garbageDetector;
+    private OverlayView overlay;
+    private ExecutorService cameraExecutor;
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
@@ -69,7 +78,10 @@ public class ScannerFragment extends Fragment {
         confidenceText = view.findViewById(R.id.scanner_confidence_text);
         closeButton = view.findViewById(R.id.scanner_btn_close);
         MaterialToolbar toolbar = view.findViewById(R.id.scan_toolbar);
+
         garbageDetector = new GarbageDetector(this.getContext());
+        overlay = view.findViewById(R.id.overlay);
+        cameraExecutor = Executors.newSingleThreadExecutor();
 
         //toolbar back to home
         View backButton = view.findViewById(R.id.btn_back_manual);
@@ -84,11 +96,11 @@ public class ScannerFragment extends Fragment {
         });
         */
 
-        // Close button for the popup
+        /*
         closeButton.setOnClickListener(v -> {
             resultCard.setVisibility(View.INVISIBLE);
         });
-
+        */
 
         // Camera Permissions
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
@@ -108,12 +120,15 @@ public class ScannerFragment extends Fragment {
                 Preview preview = new Preview.Builder().build();
                 preview.setSurfaceProvider(previewView.getSurfaceProvider());
 
+                //bind to Lifecycle
                 CameraSelector cameraSelector = new CameraSelector.Builder()
                         .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                         .build();
 
                 cameraProvider.unbindAll();
                 cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, preview);
+
+                previewView.postDelayed(this::runObjectDetection, 1000);
 
             } catch (ExecutionException | InterruptedException e) {
                 Log.e(TAG, "Use case binding failed", e);
@@ -128,4 +143,27 @@ public class ScannerFragment extends Fragment {
         confidenceText.setText(String.format("Confidence: %.1f%%", confidence));
         resultCard.setVisibility(View.VISIBLE);
     }
+
+    private void runObjectDetection() {
+        // 1. Capture the image exactly as it appears on screen
+        android.graphics.Bitmap bitmap = previewView.getBitmap();
+
+        if (bitmap != null) {
+            // 2. Run Detection (We pass rotation = 0 because the view is already rotated!)
+            List<Detection> results = garbageDetector.detect(bitmap);
+
+            // 3. Draw the boxes
+            overlay.setResults(results, bitmap.getHeight(), bitmap.getWidth());
+
+            // Debugging Log: Prove it's working
+            if (!results.isEmpty()) {
+                android.util.Log.d("EcoLens", "Found: " + results.size() + " objects");
+            }
+        }
+
+        // 4. Run again in 500ms (Loop)
+        // Adjust this number: 100ms = fast / 1000ms = slow
+        previewView.postDelayed(this::runObjectDetection, 500);
+    }
+
 }
