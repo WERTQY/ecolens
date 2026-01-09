@@ -65,16 +65,15 @@
 
     <TextView
         android:id="@+id/usernameDisplay"
-        android:layout_width="377dp"
-        android:layout_height="83dp"
+        android:layout_width="373dp"
+        android:layout_height="65dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:fontFamily="@font/frank_ruhl_libre_medium"
         android:text="@string/loading"
         android:textAlignment="viewStart"
-        android:textColor="#000000"
+        android:textColor="?attr/colorPrimary"
         android:textSize="50sp"
-        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/greetingsDisplay" />
 
@@ -109,8 +108,8 @@
 
             <TextView
                 android:id="@+id/carbon_footprint_value"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="216dp"
+                android:layout_height="85dp"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/frank_ruhl_libre_medium"
                 android:text="@string/_00_00"
@@ -119,7 +118,7 @@
                 android:textSize="70sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/carbon_footprint_unit"
-                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/carbon_footprint_title"
                 app:layout_constraintVertical_bias="0.0" />
@@ -128,7 +127,7 @@
                 android:id="@+id/carbon_footprint_unit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="32dp"
                 android:fontFamily="@font/frank_ruhl_libre_medium"
                 android:text="@string/kg_co_e"
                 android:textAlignment="center"
@@ -137,7 +136,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/carbon_footprint_title"
-                app:layout_constraintVertical_bias="0.493" />
+                app:layout_constraintVertical_bias="0.569" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
