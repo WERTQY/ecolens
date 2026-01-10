@@ -1,12 +1,10 @@
 package com.example.ecolens;
 
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
-
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,15 +12,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class RegisterFragment extends Fragment {
 
@@ -35,6 +30,8 @@ public class RegisterFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
     }
 
     @Override
@@ -47,9 +44,8 @@ public class RegisterFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        // Initialize UI components
         etUsername = view.findViewById(R.id.etUsername);
         etEmail = view.findViewById(R.id.etEmail);
         etPassword = view.findViewById(R.id.etPassword);
@@ -57,15 +53,15 @@ public class RegisterFragment extends Fragment {
         btnRegister = view.findViewById(R.id.btnRegister);
         tvLogin = view.findViewById(R.id.tvLogin);
 
-
+        // Set up listener for navigating to Login screen
         tvLogin.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_registerFragment_to_loginFragment));
 
+        // Set up listener for the register button
         btnRegister.setOnClickListener(v -> {
-            String username, email, password, confirmPassword;
-            username = String.valueOf(etUsername.getText());
-            email = String.valueOf(etEmail.getText());
-            password = String.valueOf(etPassword.getText());
-            confirmPassword = String.valueOf(etConfirmPassword.getText());
+            String username = String.valueOf(etUsername.getText());
+            String email = String.valueOf(etEmail.getText());
+            String password = String.valueOf(etPassword.getText());
+            String confirmPassword = String.valueOf(etConfirmPassword.getText());
 
             if (TextUtils.isEmpty(username)) {
                 Toast.makeText(view.getContext(), "Enter Username", Toast.LENGTH_SHORT).show();
@@ -116,7 +112,5 @@ public class RegisterFragment extends Fragment {
                         }
                     });
         });
-
-
     }
 }
