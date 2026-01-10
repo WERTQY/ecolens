@@ -39,17 +39,20 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
-    implementation(libs.firebase.auth)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
     implementation(libs.fragment)
 
-    // Add these lines for Firebase and Image Loading
+    // Firebase Bill of Materials (BOM) - Recommended for managing versions
     implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+
+    // Required Firebase Libraries
+    implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-storage")
+
+    // Glide for image loading
     implementation("com.github.bumptech.glide:glide:4.16.0")
-    implementation(libs.firebase.database)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

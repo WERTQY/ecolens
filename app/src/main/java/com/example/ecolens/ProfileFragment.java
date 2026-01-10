@@ -76,7 +76,6 @@ public class ProfileFragment extends Fragment {
         btnLogout = view.findViewById(R.id.btnLogout);
 
         if (currentUser == null) {
-            // Navigate using the correct action ID
             Navigation.findNavController(view).navigate(R.id.action_profileFragment_to_loginFragment);
             return;
         }
@@ -111,7 +110,6 @@ public class ProfileFragment extends Fragment {
         btnLogout.setOnClickListener(v -> {
             mAuth.signOut();
             Toast.makeText(getContext(), "Logged out successfully", Toast.LENGTH_SHORT).show();
-            // Navigate using the correct action ID
             Navigation.findNavController(view).navigate(R.id.action_profileFragment_to_loginFragment);
         });
     }
