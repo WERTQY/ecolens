@@ -35,15 +35,6 @@ import java.util.UUID;
 
 public class ProfileFragment extends Fragment {
 
-    private TextView tvProfileUsername, tvProfileEmail;
-    private ImageView ivProfilePicture;
-    private FloatingActionButton fabChangeProfilePic;
-    private Button btnLogout;
-
-    private FirebaseAuth mAuth;
-    private DatabaseReference mDatabase;
-    private StorageReference mStorage;
-
     private final ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -65,22 +56,22 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        mStorage = FirebaseStorage.getInstance().getReference();
 
-        ivProfilePicture = view.findViewById(R.id.ivProfilePicture);
-        fabChangeProfilePic = view.findViewById(R.id.fabChangeProfilePic);
-        tvProfileUsername = view.findViewById(R.id.tvProfileUsername);
-        tvProfileEmail = view.findViewById(R.id.tvProfileEmail);
-        btnLogout = view.findViewById(R.id.btnLogout);
+        ImageView ivProfilePicture = view.findViewById(R.id.ivProfilePicture);
+        FloatingActionButton fabChangeProfilePic = view.findViewById(R.id.fabChangeProfilePic);
+        TextView tvProfileUsername = view.findViewById(R.id.tvProfileUsername);
+        TextView tvProfileEmail = view.findViewById(R.id.tvProfileEmail);
+        Button btnLogout = view.findViewById(R.id.btnLogout);
+        Button btnEditProfile = view.findViewById(R.id.btnEditProfile);
 
         if (currentUser == null) {
             Navigation.findNavController(view).navigate(R.id.action_profileFragment_to_loginFragment);
             return;
         }
 
-        mDatabase = FirebaseDatabase.getInstance().getReference("users").child(currentUser.getUid());
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users").child(currentUser.getUid());
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -107,6 +98,8 @@ public class ProfileFragment extends Fragment {
             imagePickerLauncher.launch(intent);
         });
 
+        btnEditProfile.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_profileFragment_to_editProfileFragment));
+
         btnLogout.setOnClickListener(v -> {
             mAuth.signOut();
             Toast.makeText(getContext(), "Logged out successfully", Toast.LENGTH_SHORT).show();
@@ -115,20 +108,23 @@ public class ProfileFragment extends Fragment {
     }
 
     private void uploadProfilePicture(Uri imageUri) {
-        if (mAuth.getCurrentUser() == null) return;
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) return;
+
+        StorageReference mStorage = FirebaseStorage.getInstance().getReference();
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("users").child(currentUser.getUid());
 
         final String fileName = UUID.randomUUID().toString() + ".jpg";
-        StorageReference fileRef = mStorage.child("profile_pictures/" + mAuth.getCurrentUser().getUid() + "/" + fileName);
+        StorageReference fileRef = mStorage.child("profile_pictures/" + currentUser.getUid() + "/" + fileName);
 
         fileRef.putFile(imageUri)
-                .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(this::updateUserProfileUrl))
+                .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                    String downloadUrl = uri.toString();
+                    mDatabase.child("profilePictureUrl").setValue(downloadUrl)
+                            .addOnSuccessListener(aVoid -> Toast.makeText(getContext(), "Profile picture updated!", Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e -> Toast.makeText(getContext(), "Failed to update database.", Toast.LENGTH_SHORT).show());
+                }))
                 .addOnFailureListener(e -> Toast.makeText(getContext(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-    }
-
-    private void updateUserProfileUrl(Uri uri) {
-        String downloadUrl = uri.toString();
-        mDatabase.child("profilePictureUrl").setValue(downloadUrl)
-                .addOnSuccessListener(aVoid -> Toast.makeText(getContext(), "Profile picture updated!", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(getContext(), "Failed to update database.", Toast.LENGTH_SHORT).show());
     }
 }

@@ -13,4 +13,8 @@
     <string name="profile_title">My Profile</string>
     <string name="logout">Logout</string>
     <string name="profile_edit_picture_description">Change profile picture</string>
+    <string name="edit_profile_title">Edit Profile</string>
+    <string name="municipality">Municipality</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="edit_profile">Edit Profile</string>
 </resources>
