@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -22,14 +23,15 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -45,6 +47,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private List<RecyclingCenter> allCenters = new ArrayList<>(); // Stores all data from Firebase
     private String currentFilter = "All";
     private String currentSearchQuery = "";
+    private ImageButton btnBackMap;
 
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -64,6 +67,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         setHasOptionsMenu(true);
         db = FirebaseFirestore.getInstance();
+
+        btnBackMap = view.findViewById(R.id.btn_back_map);
+        btnBackMap.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Navigation.findNavController(view).navigate(R.id.homeFragment);
+            }
+        });
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
@@ -185,14 +196,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 matchingCenters.add(center);
             }
         }
-
+        BitmapDescriptor markerIcon = bitmapDescriptorFromVector(requireContext(), R.drawable.ic_recycle_marker);
         for (RecyclingCenter center : matchingCenters) {
             LatLng position = new LatLng(center.getLatitude(), center.getLongitude());
             mMap.addMarker(new MarkerOptions()
                     .position(position)
                     .title(center.getName())
                     .snippet(center.getAddress())
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_recycle_marker)));
+                    .icon(markerIcon));
         }
 
         // This part is for the search zoom. It is correct.
@@ -230,5 +241,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             currentFilter = "Glass";
             filterAndShowMarkers();
         });
+    }
+    //helper method to fix map problem
+    private com.google.android.gms.maps.model.BitmapDescriptor bitmapDescriptorFromVector(android.content.Context context, int vectorResId) {
+        android.graphics.drawable.Drawable vectorDrawable = androidx.core.content.ContextCompat.getDrawable(context, vectorResId);
+        if (vectorDrawable == null) return null;
+
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        android.graphics.Bitmap bitmap = android.graphics.Bitmap.createBitmap(
+                vectorDrawable.getIntrinsicWidth(),
+                vectorDrawable.getIntrinsicHeight(),
+                android.graphics.Bitmap.Config.ARGB_8888);
+
+        android.graphics.Canvas canvas = new android.graphics.Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+
+        return com.google.android.gms.maps.model.BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 }

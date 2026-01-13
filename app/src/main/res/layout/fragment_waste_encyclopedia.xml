@@ -26,7 +26,7 @@
             android:background="#2E7D32">
 
             <ImageButton
-                android:id="@+id/btn_back_manual"
+                android:id="@+id/btn_back_map"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:background="?attr/selectableItemBackgroundBorderless"

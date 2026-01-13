@@ -54,7 +54,7 @@ public class WasteEncyclopediaFragment extends Fragment {
         ImageButton btnSearch = view.findViewById(R.id.btn_search);
 
         //toolbar back to home
-        View backButton = view.findViewById(R.id.btn_back_manual);
+        View backButton = view.findViewById(R.id.btn_back_map);
         backButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigateUp();
         });

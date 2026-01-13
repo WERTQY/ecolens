@@ -16,8 +16,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.Group;
@@ -87,7 +85,7 @@ public class CarbonFootprintFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        View backButton = view.findViewById(R.id.btn_back_manual);
+        View backButton = view.findViewById(R.id.btn_back_map);
         if (backButton != null) {
             backButton.setOnClickListener(v -> {
                 Navigation.findNavController(view).navigateUp();
