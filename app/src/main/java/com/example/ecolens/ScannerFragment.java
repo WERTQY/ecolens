@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -47,8 +49,7 @@ public class ScannerFragment extends Fragment {
     private TextView confidenceText;
     private Button closeButton;
 
-    private GarbageDetector garbageDetector;
-    private OverlayView overlay;
+    private GarbageClassifier garbageClassifier;
     private ExecutorService cameraExecutor;
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -76,9 +77,8 @@ public class ScannerFragment extends Fragment {
         confidenceText = view.findViewById(R.id.scanner_confidence_text);
         closeButton = view.findViewById(R.id.scanner_btn_close);
         MaterialToolbar toolbar = view.findViewById(R.id.scan_toolbar);
+        garbageClassifier = new GarbageClassifier(this.getContext(), 224);
 
-        garbageDetector = new GarbageDetector(this.getContext());
-        overlay = view.findViewById(R.id.overlay);
         cameraExecutor = Executors.newSingleThreadExecutor();
 
         //toolbar back to home
@@ -118,15 +118,38 @@ public class ScannerFragment extends Fragment {
                 Preview preview = new Preview.Builder().build();
                 preview.setSurfaceProvider(previewView.getSurfaceProvider());
 
+                // 2. Image Analysis
+                ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
+                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                        .setTargetResolution(new Size(640, 480)) // Keep low for speed
+                        .build();
+
+                imageAnalysis.setAnalyzer(cameraExecutor,
+                        new GarbageAnalyzer(garbageClassifier, new GarbageAnalyzer.OnResultListener() {
+                            @Override
+                            public void onResult(String label, float score) {
+                                String confidence = String.format("%.1f", score * 100);
+                                if(!label.equals("plastic") && !label.equals("paper") && !label.equals("glass")) {
+
+                                }else {
+                                    if(score >= 0.6) {
+                                        System.out.println(confidence);
+                                        System.out.println(label);
+                                    }
+                                    //showPopup(label, "Orange", Float.parseFloat(confidence));
+                                }
+                            }
+                        })
+                );
+
+
                 //bind to Lifecycle
                 CameraSelector cameraSelector = new CameraSelector.Builder()
                         .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                         .build();
 
                 cameraProvider.unbindAll();
-                cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, preview);
-
-                previewView.postDelayed(this::runObjectDetection, 1000);
+                cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, preview, imageAnalysis);
 
             } catch (ExecutionException | InterruptedException e) {
                 Log.e(TAG, "Use case binding failed", e);
@@ -134,34 +157,11 @@ public class ScannerFragment extends Fragment {
         }, ContextCompat.getMainExecutor(requireContext()));
     }
 
-    // Dummy logic popup
+    // Logic popup
     private void showPopup(String detectedItem, String binType, float confidence){
         resultText.setText("Detected: " + detectedItem);
         binInstructionText.setText("Throw in " + binType);
         confidenceText.setText(String.format("Confidence: %.1f%%", confidence));
         resultCard.setVisibility(View.VISIBLE);
     }
-
-    private void runObjectDetection() {
-        // 1. Capture the image exactly as it appears on screen
-        android.graphics.Bitmap bitmap = previewView.getBitmap();
-
-        if (bitmap != null) {
-            // 2. Run Detection (We pass rotation = 0 because the view is already rotated!)
-            List<Detection> results = garbageDetector.detect(bitmap);
-
-            // 3. Draw the boxes
-            overlay.setResults(results, bitmap.getHeight(), bitmap.getWidth());
-
-            // Debugging Log: Prove it's working
-            if (!results.isEmpty()) {
-                android.util.Log.d("EcoLens", "Found: " + results.size() + " objects");
-            }
-        }
-
-        // 4. Run again in 500ms (Loop)
-        // Adjust this number: 100ms = fast / 1000ms = slow
-        previewView.postDelayed(this::runObjectDetection, 500);
-    }
-
 }

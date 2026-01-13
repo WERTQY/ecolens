@@ -99,7 +99,7 @@
                 android:layout_height="88dp"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/frank_ruhl_libre_medium"
-                android:text="00.00"
+                android:text="0.00"
                 android:textAlignment="center"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="70sp"
