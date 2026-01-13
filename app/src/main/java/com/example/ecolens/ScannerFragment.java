@@ -2,13 +2,13 @@ package com.example.ecolens;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,19 +21,14 @@ import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
-import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.common.util.concurrent.ListenableFuture;
 
-import org.tensorflow.lite.task.vision.detector.Detection;
-
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -42,12 +37,16 @@ public class ScannerFragment extends Fragment {
 
     private static final String TAG = "ScannerFragment";
     private PreviewView previewView;
-    private FloatingActionButton captureButton;
-    private CardView resultCard;
     private TextView resultText;
-    private TextView binInstructionText;
+    private TextView binColourText;
     private TextView confidenceText;
-    private Button closeButton;
+    private View resultBackground;
+
+    //Debouncing
+    private int consecutiveTimes;
+    private String lastLabel;
+    private int consecutiveLowConfidence;
+
 
     private GarbageClassifier garbageClassifier;
     private ExecutorService cameraExecutor;
@@ -70,14 +69,16 @@ public class ScannerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         previewView = view.findViewById(R.id.scanner_preview_view);
-        captureButton = view.findViewById(R.id.scanner_capture_btn);
-        resultCard = view.findViewById(R.id.scanner_result_card);
-        resultText = view.findViewById(R.id.scanner_result_text);
-        binInstructionText = view.findViewById(R.id.scanner_bin_instruction);
-        confidenceText = view.findViewById(R.id.scanner_confidence_text);
-        closeButton = view.findViewById(R.id.scanner_btn_close);
+        resultText = view.findViewById(R.id.scanner_result_label);
+        binColourText = view.findViewById(R.id.scanner_bin_colour);
+        confidenceText = view.findViewById(R.id.scanner_confidence_label);
+        resultBackground = view.findViewById(R.id.scanner_result_background);
         MaterialToolbar toolbar = view.findViewById(R.id.scan_toolbar);
         garbageClassifier = new GarbageClassifier(this.getContext(), 224);
+
+        consecutiveTimes = 0;
+        consecutiveLowConfidence = 0;
+        String lastLabel = "";
 
         cameraExecutor = Executors.newSingleThreadExecutor();
 
@@ -86,19 +87,6 @@ public class ScannerFragment extends Fragment {
         backButton.setOnClickListener(v -> {
             Navigation.findNavController(view).navigateUp();
         });
-
-        /*
-        captureButton.setOnClickListener(v -> {
-
-            showPopup("Plastic", "Orange", 99);
-        });
-        */
-
-        /*
-        closeButton.setOnClickListener(v -> {
-            resultCard.setVisibility(View.INVISIBLE);
-        });
-        */
 
         // Camera Permissions
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
@@ -128,15 +116,70 @@ public class ScannerFragment extends Fragment {
                         new GarbageAnalyzer(garbageClassifier, new GarbageAnalyzer.OnResultListener() {
                             @Override
                             public void onResult(String label, float score) {
-                                String confidence = String.format("%.1f", score * 100);
-                                if(!label.equals("plastic") && !label.equals("paper") && !label.equals("glass")) {
+                                System.out.println(label);
+                                System.out.println(score);
+                                System.out.println(lastLabel);
 
-                                }else {
-                                    if(score >= 0.6) {
-                                        System.out.println(confidence);
-                                        System.out.println(label);
+                                if(consecutiveLowConfidence >= 3) {
+                                    //FIX THE ISSUES
+                                    if (getActivity() != null) {
+                                        // SWITCH TO MAIN THREAD
+                                        getActivity().runOnUiThread(() -> {
+                                            // NOW it is safe to touch the UI
+                                            resultBackground.setVisibility(View.INVISIBLE);
+                                            showResult("", "", -1, "#FFFFFF");
+                                        });
                                     }
-                                    //showPopup(label, "Orange", Float.parseFloat(confidence));
+                                }
+
+                                if(!label.equals("plastic") && !label.equals("paper") && !label.equals("glass") && !label.equals("metal")) {
+                                    consecutiveLowConfidence++;
+                                    return;
+                                }
+
+                                if(score < 0.5){
+                                    consecutiveLowConfidence++;
+                                    return;
+                                }
+                                consecutiveLowConfidence = 0;
+
+                                if(consecutiveTimes == 0) {
+                                    lastLabel = label;
+                                }
+                                if(label.equals(lastLabel)) consecutiveTimes++;
+                                else consecutiveTimes = 0;
+
+                                lastLabel = label;
+
+                                if(consecutiveTimes >= 3) {
+                                    String binType = "";
+                                    String colourCode = "#FFFFFF";
+                                    switch (label) {
+                                        case "plastic":
+                                        case "metal":
+                                            binType = "Orange";
+                                            colourCode = "#F58220";
+                                            break;
+                                        case "paper":
+                                            binType = "Blue";
+                                            colourCode = "#005696";
+                                            break;
+                                        case "glass":
+                                            binType = "Brown";
+                                            colourCode = "#8B4513";
+                                            break;
+                                    }
+                                    //FIX THE ISSUES
+                                    if (getActivity() != null) {
+                                        // SWITCH TO MAIN THREAD
+                                        String finalBinType = binType;
+                                        String finalColourCode = colourCode;
+                                        getActivity().runOnUiThread(() -> {
+                                            // NOW it is safe to touch the UI
+                                            resultBackground.setVisibility(View.VISIBLE);
+                                            showResult(label, finalBinType, score * 100, finalColourCode);
+                                        });
+                                    }
                                 }
                             }
                         })
@@ -158,10 +201,22 @@ public class ScannerFragment extends Fragment {
     }
 
     // Logic popup
-    private void showPopup(String detectedItem, String binType, float confidence){
-        resultText.setText("Detected: " + detectedItem);
-        binInstructionText.setText("Throw in " + binType);
-        confidenceText.setText(String.format("Confidence: %.1f%%", confidence));
-        resultCard.setVisibility(View.VISIBLE);
+    private void showResult(String detectedItem, String binType, float confidence, String colourCode){
+        if(detectedItem.isEmpty())
+            resultText.setText("");
+        else
+            resultText.setText("Detected: " + detectedItem);
+
+        if(binType.isEmpty())
+            binColourText.setText("");
+        else {
+            binColourText.setTextColor(Color.parseColor(colourCode));
+            binColourText.setText("Throw in " + binType);
+        }
+        if(confidence == -1)
+            confidenceText.setText("");
+        else
+            confidenceText.setText(String.format("Confidence: %.1f%%", confidence));
+
     }
 }
