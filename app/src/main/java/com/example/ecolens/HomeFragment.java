@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.view.animation.DecelerateInterpolator;
@@ -59,7 +60,6 @@ public class HomeFragment extends Fragment {
         greetingDisplay = view.findViewById(R.id.greetingsDisplay);
         usernameDisplay = view.findViewById(R.id.usernameDisplay);
 
-
         // Initialize Firebase
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -67,6 +67,14 @@ public class HomeFragment extends Fragment {
         //greeting logic
         if(greetingDisplay != null){
             greetingDisplay.setText(getGreeting());
+        }
+
+        //profile button
+        ImageButton btnProfile = view.findViewById(R.id.profile_button);
+        if(btnProfile != null){
+            btnProfile.setOnClickListener(v ->{
+                Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_userFragment);
+            });
         }
 
         // Diary Button
