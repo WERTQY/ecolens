@@ -112,7 +112,7 @@
                 android:layout_height="85dp"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/frank_ruhl_libre_medium"
-                android:text="@string/_00_00"
+                android:text="@string/_0_00"
                 android:textAlignment="center"
                 android:textColor="?attr/colorPrimary"
                 android:textSize="70sp"

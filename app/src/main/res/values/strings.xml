@@ -17,7 +17,7 @@
     <string name="welcome_username">Welcome username!</string>
     <string name="todo">TODO</string>
     <string name="total_carbon_footprint_saved">Total Carbon Footprint Saved</string>
-    <string name="_00_00">00.00</string>
+    <string name="_0_00">0.00</string>
     <string name="kg_co_e">kg CO₂e</string>
     <string name="your_current_achievement">Your Current Achievement</string>
     <string name="logout">Logout</string>
