@@ -14,7 +14,7 @@ public class GarbageAnalyzer implements ImageAnalysis.Analyzer {
     private final OnResultListener listener;
     private long lastTimeStamp = 0;
     private static final long INTERVAL = 500;
-    private static final float CROP_SCALE = 0.75f;
+    private static final float CROP_SCALE = 0.4f;
 
     public interface OnResultListener {
         void onResult(String label, float score);
@@ -58,6 +58,7 @@ public class GarbageAnalyzer implements ImageAnalysis.Analyzer {
         );
 
         // Classify
+        saveBitmapForDebugging(croppedBitmap);
         // The classifier will resize this crop down to 224x224 automatically
         List<GarbageClassifier.ClassificationResult> results = classifier.classify(croppedBitmap);
 
@@ -76,4 +77,27 @@ public class GarbageAnalyzer implements ImageAnalysis.Analyzer {
         matrix.postRotate(angle);
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
+
+    private void saveBitmapForDebugging(Bitmap bitmap) {
+        // Only save 1 image every 5 seconds to avoid flooding your gallery
+        if (System.currentTimeMillis() % 5000 > 200) return;
+
+        String filename = "DEBUG_" + System.currentTimeMillis() + ".jpg";
+        android.content.ContentValues values = new android.content.ContentValues();
+        values.put(android.provider.MediaStore.Images.Media.TITLE, filename);
+        values.put(android.provider.MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+
+        try {
+            android.net.Uri uri = classifier.context.getContentResolver().insert(
+                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+            try (java.io.OutputStream out = classifier.context.getContentResolver().openOutputStream(uri)) {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                System.out.println("SAVED DEBUG IMAGE: " + uri.toString());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

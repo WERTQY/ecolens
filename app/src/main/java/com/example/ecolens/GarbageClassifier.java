@@ -16,7 +16,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class GarbageClassifier {
-    private final Context context;
+    public final Context context;
     private ImageClassifier imageClassifier;
     private final int inputSize;
 
