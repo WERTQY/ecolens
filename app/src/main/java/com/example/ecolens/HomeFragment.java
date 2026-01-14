@@ -94,17 +94,31 @@ public class HomeFragment extends Fragment {
 
     // username
     private void fetchUserName() {
-        String uid = auth.getCurrentUser().getUid();
+        FirebaseUser user = auth.getCurrentUser();
+        if (user == null) {
+            if (usernameDisplay != null) usernameDisplay.setText("User!");
+            return;
+        }
+        String uid = user.getUid();
         db.collection("users").document(uid).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         String name = documentSnapshot.getString("name");
-                        if (name != null && usernameDisplay != null) {
-                            usernameDisplay.setText(name);
+                        if (name != null && !name.isEmpty() && usernameDisplay != null) {
+                            usernameDisplay.setText(name + "!");
+                        } else if (usernameDisplay != null) {
+                            usernameDisplay.setText("User!");
                         }
+                    } else if (usernameDisplay != null) { // Document doesn't exist
+                        usernameDisplay.setText("User!");
                     }
                 })
-                .addOnFailureListener(e -> Log.e("HomeFragment", "Error fetching name", e));
+                .addOnFailureListener(e -> {
+                    Log.e("HomeFragment", "Error fetching name", e);
+                    if (usernameDisplay != null) {
+                        usernameDisplay.setText("User!"); // Also set placeholder on failure
+                    }
+                });
     }
 
     // greeting message

@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.storage)
     implementation(platform("com.google.firebase:firebase-bom:34.7.0"))
     implementation ("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-database")

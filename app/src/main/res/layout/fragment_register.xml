@@ -9,7 +9,7 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="356dp"
-        android:layout_height="540dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         app:cardCornerRadius="16dp"
@@ -51,13 +51,31 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/txtLayoutPassword"
+                android:id="@+id/txtLayoutUsername"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 app:layout_constraintEnd_toEndOf="@+id/txtLayoutEmail"
                 app:layout_constraintStart_toStartOf="@+id/txtLayoutEmail"
                 app:layout_constraintTop_toBottomOf="@+id/txtLayoutEmail">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/username"
+                    android:singleLine="true" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/txtLayoutPassword"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:layout_constraintEnd_toEndOf="@+id/txtLayoutUsername"
+                app:layout_constraintStart_toStartOf="@+id/txtLayoutUsername"
+                app:layout_constraintTop_toBottomOf="@+id/txtLayoutUsername">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPassword"
@@ -104,7 +122,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="32dp"
-                android:text="@string/already_have_an_account"
+                android.text="@string/already_have_an_account"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/tvLogin"
                 app:layout_constraintHorizontal_bias="0.5"
