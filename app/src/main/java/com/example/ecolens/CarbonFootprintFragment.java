@@ -37,16 +37,14 @@ public class CarbonFootprintFragment extends Fragment {
     private EditText editTextPlastic, editTextPaper, editTextAluminium, editTextGlass, editTextOrganic;
     private Button buttonCalculate;
     private Button btn_ok;
-    // We now correctly reference both TextViews separately
+
     private TextView textViewResult, textViewGrossTotal;
     private ImageView imageViewFootprint;
     private Group groupInputs;
 
-    // --- Firebase (Firestore) ---
+    // --- Firebase ---
     private DocumentReference userImpactDocRef;
     private FirebaseUser currentUser;
-
-    // --- Data ---
     private double grossTotal = 0.0;
 
     // --- Constants ---
@@ -108,11 +106,9 @@ public class CarbonFootprintFragment extends Fragment {
         textViewResult = view.findViewById(R.id.textViewResult);
     }
 
-    // Add this new helper method
     private void updateCalculateButtonState() {
         double totalInput = 0;
 
-        // Sum up all current values using your existing getWeight helper
         totalInput += getWeight(editTextPlastic);
         totalInput += getWeight(editTextPaper);
         totalInput += getWeight(editTextAluminium);
@@ -179,20 +175,11 @@ public class CarbonFootprintFragment extends Fragment {
         }
     }
 
-    // This method ONLY updates the gross total TextView.
     private void updateGrossTotalText() {
         if (textViewGrossTotal != null) {
             textViewGrossTotal.setText(String.format("Gross Total Saved: %.2f kg CO₂e", grossTotal));
         }
     }
-
-    // In CarbonFootprintFragment.java
-
-    // In C:/Users/User/AndroidStudioProjects/ecolens/app/src/main/java/com/example/ecolens/CarbonFootprintFragment.java
-
-// In C:/Users/User/AndroidStudioProjects/ecolens/app/src/main/java/com/example/ecolens/CarbonFootprintFragment.java
-
-    // In C:/Users/User/AndroidStudioProjects/ecolens/app/src/main/java/com/example/ecolens/CarbonFootprintFragment.java
 
     private void calculateCarbonFootprint() {
         double sessionTotal = 0;
@@ -204,37 +191,27 @@ public class CarbonFootprintFragment extends Fragment {
 
         textViewResult.setText(String.format("Current Saved: %.2f kg CO2e", sessionTotal));
 
-        // This is required for the lambda expression.
         final double finalSessionTotal = sessionTotal;
         Log.w(TAG, "userimpactdocref:" + userImpactDocRef);
 
-        // --- Definitive Get-then-Set Solution ---
-        if (userImpactDocRef != null && currentUser != null) {
+        if (userImpactDocRef != null && currentUser != null) {//read gross total from database
 
-            // 1. Explicitly get the document first.
             userImpactDocRef.get().addOnSuccessListener(documentSnapshot -> {
                 double currentGrossTotal = 0.0;
 
-                // 2. Safely get the current total if the document exists.
                 if (documentSnapshot.exists() && documentSnapshot.contains("gross_footprint")) {
                     currentGrossTotal = documentSnapshot.getDouble("gross_footprint");
                 }
 
-                // 3. Calculate the new total on the app side.
                 double newGrossTotal = currentGrossTotal + finalSessionTotal;
 
-                // 4. Create the complete data map required by your security rules.
                 Map<String, Object> data = new HashMap<>();
                 data.put("gross_footprint", newGrossTotal);
                 data.put("user_id", currentUser.getUid());
 
-                // 5. Use set(merge) to CREATE or UPDATE the document.
-                // This is the key change to handle new users correctly.
                 userImpactDocRef.set(data, SetOptions.merge())
                         .addOnSuccessListener(aVoid -> Log.d(TAG, "Set with merge successful!"))
                         .addOnFailureListener(e -> {
-                            // If an error still occurs here, it's a fundamental rules mismatch,
-                            // but this logic is now sound for create/update.
                             Log.w(TAG, "Set with merge failed: ", e);
                         });
 
@@ -248,12 +225,9 @@ public class CarbonFootprintFragment extends Fragment {
                         .addOnSuccessListener(docRef -> Log.d(TAG, "History saved with ID: " + docRef.getId()))
                         .addOnFailureListener(e -> Log.w(TAG, "Error saving history", e));
             }).addOnFailureListener(e -> {
-                // This would fail if the user doesn't even have read permission.
                 Log.w(TAG, "Failed to get document before setting data: ", e);
             });
         } else {
-            // --- ADDED CONDITION ---
-            // Log an error if the user is not authenticated or the doc ref is null
             Log.e(TAG, "Cannot update gross total: User is not authenticated or userImpactDocRef is null.");
         }
 
@@ -266,21 +240,18 @@ public class CarbonFootprintFragment extends Fragment {
         animateFootprint(sessionTotal);
     }
 
-
-    // This animation method now ONLY updates the session result TextView.
-    private void animateResultText(double finalValue) {
+    private void animateResultText(double finalValue) {//result incrementing animation
         ValueAnimator animator = ValueAnimator.ofFloat(0, (float) finalValue);
         animator.setInterpolator(new DecelerateInterpolator());
         animator.setDuration(1000);
         animator.addUpdateListener(animation -> {
             float animatedValue = (float) animation.getAnimatedValue();
-            // This now correctly updates ONLY the session TextView, leaving the gross total alone.
             textViewResult.setText(String.format("Current Saved: %.2f kg CO₂e", animatedValue));
         });
         animator.start();
     }
 
-    private void animateFootprint(double totalCarbonFootprint) {
+    private void animateFootprint(double totalCarbonFootprint) {//enlarge footprint image based on carbon saved
         double normalizedFootprint = Math.min(totalCarbonFootprint, MAX_CARBON_FOR_SCALING);
         double logValue = Math.log1p(normalizedFootprint);
         double maxLogValue = Math.log1p(MAX_CARBON_FOR_SCALING);
