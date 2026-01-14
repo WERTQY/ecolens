@@ -1,21 +1,20 @@
 package com.example.ecolens;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
-
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -28,8 +27,9 @@ import com.google.firebase.auth.FirebaseUser;
 public class LoginFragment extends Fragment {
     TextInputEditText etEmail, etPassword;
     Button btnLogin;
-    TextView tvRegister;
+    TextView tvRegister, tvForgotPassword;
     FirebaseAuth mAuth;
+    private static final String TAG = "LoginFragment";
 
 
     @Override
@@ -62,7 +62,33 @@ public class LoginFragment extends Fragment {
         etEmail = view.findViewById(R.id.etEmail);
         etPassword = view.findViewById(R.id.etPassword);
         btnLogin = view.findViewById(R.id.btnLogin);
+        tvRegister = view.findViewById(R.id.tvLogin);
+        tvForgotPassword = view.findViewById(R.id.tvForgotPassword);
 
+        tvForgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = String.valueOf(etEmail.getText());
+                if (TextUtils.isEmpty(email)) {
+                    Toast.makeText(getContext(), "Please enter your email to reset password.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                mAuth.sendPasswordResetEmail(email)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(getContext(), "Password reset email sent.", Toast.LENGTH_LONG).show();
+                                    Log.d(TAG, "Password reset email sent.");
+                                } else {
+                                    Toast.makeText(getContext(), "Failed to send reset email.", Toast.LENGTH_SHORT).show();
+                                    Log.e(TAG, "Error sending password reset email", task.getException());
+                                }
+                            }
+                        });
+            }
+        });
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,8 +123,6 @@ public class LoginFragment extends Fragment {
                         });
             }
         });
-
-        tvRegister = view.findViewById(R.id.tvLogin);
 
         tvRegister.setOnClickListener(new View.OnClickListener() {
             @Override
