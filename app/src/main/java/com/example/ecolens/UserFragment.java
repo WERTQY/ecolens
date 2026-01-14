@@ -3,6 +3,7 @@ package com.example.ecolens;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -32,7 +33,9 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class UserFragment extends Fragment {
@@ -244,17 +247,73 @@ public class UserFragment extends Fragment {
 
     private void loadUserData() {
         String uid = auth.getCurrentUser().getUid();
+
+        // Load user profile data
         db.collection("users").document(uid).get().addOnSuccessListener(document -> {
             if (document.exists()) {
                 tvUsername.setText(document.getString("name"));
                 tvEmail.setText(document.getString("email"));
-                // Format and set joined date
+
+                if (document.contains("dateJoined") && document.getTimestamp("dateJoined") != null) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("MMM yyyy", Locale.getDefault());
+                    tvJoinedDate.setText(sdf.format(document.getTimestamp("dateJoined").toDate()));
+                } else {
+                    tvJoinedDate.setText("N/A");
+                }
 
                 if (document.contains("profileImageUrl") && getContext() != null) {
                     Glide.with(getContext()).load(document.getString("profileImageUrl")).into(ivProfilePicture);
                 }
+            } else {
+                Log.d(TAG, "No such document in users collection");
             }
+        }).addOnFailureListener(e -> Log.e(TAG, "Error loading user data", e));
+
+        // Load user impact data
+        db.collection("impact_tracker").document(uid).get().addOnSuccessListener(document -> {
+            double totalScore = 0.0;
+            if (document.exists() && document.contains("gross_footprint") && document.get("gross_footprint")!=null) {
+                totalScore = document.getDouble("gross_footprint");
+
+            }else{
+                totalScore=0.0;
+            }
+            tvImpactScore.setText(String.format(Locale.getDefault(), "%.2f kg", totalScore));
+            updateBadges(totalScore);
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "Error loading impact data", e);
+            tvImpactScore.setText("0.00 kg");
+            updateBadges(0.0);
         });
-        // ... load other data (impact score, badges)
+    }
+
+    private void updateBadges(double score) {
+        // Colors
+        int colorBronze = 0xFFCD7F32;
+        int colorSilver = 0xFFC0C0C0;
+        int colorGold   = 0xFFFFD700;
+        int colorLocked = 0xFFE0E0E0; // Light Gray
+
+        // Bronze is always unlocked
+        imgBadgeBronze.setColorFilter(colorBronze, PorterDuff.Mode.SRC_IN);
+        imgBadgeBronze.setAlpha(1.0f);
+
+        // 2. Silver (Unlock at 10kg)
+        if (score >= 10.0) {
+            imgBadgeSilver.setColorFilter(colorSilver, PorterDuff.Mode.SRC_IN);
+            imgBadgeSilver.setAlpha(1.0f);
+        } else {
+            imgBadgeSilver.setColorFilter(colorLocked, PorterDuff.Mode.SRC_IN);
+            imgBadgeSilver.setAlpha(0.5f); // Make it look faded
+        }
+
+        // 3. Gold (Unlock at 50kg)
+        if (score >= 50.0) {
+            imgBadgeGold.setColorFilter(colorGold, PorterDuff.Mode.SRC_IN);
+            imgBadgeGold.setAlpha(1.0f);
+        } else {
+            imgBadgeGold.setColorFilter(colorLocked, PorterDuff.Mode.SRC_IN);
+            imgBadgeGold.setAlpha(0.5f); // Make it look faded
+        }
     }
 }
