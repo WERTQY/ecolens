@@ -124,7 +124,7 @@ public class ScannerFragment extends Fragment {
                                 System.out.println("Confidence: " + score);
                                 System.out.println("Last Detected: " + lastLabel);
 
-                                if(consecutiveLowConfidence >= 3) {
+                                if(consecutiveLowConfidence >= 2) {
                                     //FIX THE ISSUES
                                     if (getActivity() != null) {
                                         // SWITCH TO MAIN THREAD
@@ -136,15 +136,24 @@ public class ScannerFragment extends Fragment {
                                     }
                                 }
 
-                                if(!label.equals("plastic") && !label.equals("paper") && !label.equals("glass") && !label.equals("metal")) {
-                                    consecutiveLowConfidence++;
-                                    return;
-                                }
-
                                 if(score < 0.5){
                                     consecutiveLowConfidence++;
                                     return;
                                 }
+
+                                if(!label.equals("plastic") && !label.equals("paper") && !label.equals("glass") && !label.equals("metal")) {
+                                    if(label.equals("battery") || label.equals("biological") || label.equals("shoes")) {
+                                        getActivity().runOnUiThread(() -> {
+                                            // NOW it is safe to touch the UI
+                                            resultBackground.setVisibility(View.VISIBLE);
+                                            showResult("Non-Recyclable", "", score * 100, "#FFFFFF");
+                                        });
+                                        return;
+                                    }
+                                    consecutiveLowConfidence++;
+                                    return;
+                                }
+
                                 consecutiveLowConfidence = 0;
 
                                 if(consecutiveTimes == 0) {
