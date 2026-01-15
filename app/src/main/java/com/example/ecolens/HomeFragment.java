@@ -182,15 +182,24 @@ public class HomeFragment extends Fragment {
     private void updateTierUI(double totalSaved) {
         if (tvTierName == null || imgTierBadge == null) return;
 
-        if (totalSaved < 10.0) {
+        if (totalSaved <= 0) {
+            tvTierName.setText("Recycle to Rank Up!");
+            imgTierBadge.setColorFilter(0xFFE0E0E0, android.graphics.PorterDuff.Mode.SRC_IN);
+        } else if (totalSaved < 10.0) {
             tvTierName.setText("Bronze Recycler");
             imgTierBadge.setColorFilter(0xFFCD7F32); // Bronze
         } else if (totalSaved < 50.0) {
             tvTierName.setText("Silver Recycler");
             imgTierBadge.setColorFilter(0xFFC0C0C0); // Silver
-        } else {
+        } else if (totalSaved < 100.0) {
             tvTierName.setText("Gold Recycler");
             imgTierBadge.setColorFilter(0xFFFFD700); // Gold
+        } else if (totalSaved < 500.0) {
+            tvTierName.setText("Platinum Recycler");
+            imgTierBadge.setColorFilter(0xFFE5E4E2); // Platinum (Shiny Gray)
+        } else {
+            tvTierName.setText("Diamond Recycler");
+            imgTierBadge.setColorFilter(0xFFB9F2FF); // Diamond (Light Blue)
         }
     }
 

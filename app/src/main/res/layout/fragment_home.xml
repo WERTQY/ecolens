@@ -192,7 +192,7 @@
                 android:id="@+id/imgTrophy"
                 android:layout_width="54dp"
                 android:layout_height="47dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="10dp"
                 android:contentDescription="@string/todo"
                 android:src="@drawable/ic_trophy"
                 app:layout_constraintBottom_toBottomOf="parent"

@@ -284,6 +284,45 @@
                     android:textSize="12sp" />
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/imgBadgePlatinum"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_trophy"
+                    app:tint="#E5E4E2" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Platinum"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/imgBadgeDiamond"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_trophy"
+                    app:tint="#B9F2FF" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Diamond"
+                    android:textSize="12sp" />
+            </LinearLayout>
         </LinearLayout>
     </HorizontalScrollView>
 

@@ -2,6 +2,8 @@ package com.example.ecolens;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -23,9 +25,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -53,11 +52,14 @@ public class WasteEncyclopediaFragment extends Fragment {
         etSearch = view.findViewById(R.id.et_search);
         ImageButton btnSearch = view.findViewById(R.id.btn_search);
 
-        //toolbar back to home
+        // --- FIX 1: Correct ID for the back button ---
+        // Was "btn_back_manual", changed to "btn_back_map" based on your XML
         View backButton = view.findViewById(R.id.btn_back_map);
-        backButton.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigateUp();
-        });
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> {
+                Navigation.findNavController(view).navigateUp();
+            });
+        }
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -65,25 +67,16 @@ public class WasteEncyclopediaFragment extends Fragment {
         loadWasteItemsFromFirestore();
 
         etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (adapter != null) {
-                    filter(s.toString());
-                }
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (adapter != null) filter(s.toString());
             }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
+            @Override public void afterTextChanged(Editable s) {}
         });
 
         etSearch.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                if (adapter != null) {
-                    filter(etSearch.getText().toString());
-                }
+                if (adapter != null) filter(etSearch.getText().toString());
                 hideKeyboard(v);
                 return true;
             }
@@ -91,9 +84,7 @@ public class WasteEncyclopediaFragment extends Fragment {
         });
 
         btnSearch.setOnClickListener(v -> {
-            if (adapter != null) {
-                filter(etSearch.getText().toString());
-            }
+            if (adapter != null) filter(etSearch.getText().toString());
             hideKeyboard(v);
         });
 
@@ -107,7 +98,7 @@ public class WasteEncyclopediaFragment extends Fragment {
             filteredItems.addAll(items);
         } else {
             for (WasteItem item : items) {
-                if (item.getItemName().toLowerCase().contains(query)) {
+                if (item.getItemName() != null && item.getItemName().toLowerCase().contains(query)) {
                     filteredItems.add(item);
                 }
             }
@@ -145,15 +136,19 @@ public class WasteEncyclopediaFragment extends Fragment {
                 });
     }
 
+    // --- FIX 2: Updated Data Model to use imageSource ---
     public static class WasteItem {
-        private String itemName, preparation, imageName;
-        private boolean hazardous, recyclable;
+        private String itemName;
+        private String preparation;
+        private String imageSource; // Renamed from imageName to match your Firebase URL field
+        private boolean hazardous;
+        private boolean recyclable;
 
         public WasteItem() {}
 
         public String getItemName() { return itemName; }
         public String getPreparation() { return preparation; }
-        public String getImageName() { return imageName; }
+        public String getImageSource() { return imageSource; } // Updated Getter
         public boolean isHazardous() { return hazardous; }
         public boolean isRecyclable() { return recyclable; }
     }
@@ -180,27 +175,31 @@ public class WasteEncyclopediaFragment extends Fragment {
             holder.tvName.setText(item.getItemName());
             holder.tvPrep.setText(item.getPreparation());
 
-            String imageName = item.getImageName();
-            if (imageName != null && !imageName.isEmpty()) {
-                String drawableName = imageName.trim().toLowerCase();
-                if (drawableName.contains(".")) {
-                    drawableName = drawableName.substring(0, drawableName.lastIndexOf('.'));
-                }
-                int resId = viewContext.getResources().getIdentifier(drawableName, "drawable", viewContext.getPackageName());
-                if (resId != 0) {
-                    Glide.with(viewContext)
-                            .load(resId)
-                            .placeholder(R.drawable.ic_launcher_background)
-                            .error(R.drawable.ic_warning)
-                            .into(holder.imgItem);
-                } else {
-                    holder.imgItem.setImageResource(R.drawable.ic_launcher_background);
-                }
-            } else {
-                holder.imgItem.setImageResource(R.drawable.ic_launcher_background);
-            }
+            // --- FIX 3: Use Simplified Loader ---
+            loadImage(viewContext, item.getImageSource(), holder.imgItem);
 
             holder.itemView.setOnClickListener(v -> showPopup(item, v.getContext()));
+        }
+
+        // --- NEW HELPER METHOD ---
+        private void loadImage(Context context, String url, ImageView target) {
+            // 1. Clear old image (Prevents "Wrong Image" recycling bug)
+            Glide.with(context).clear(target);
+
+            // 2. Load URL directly
+            if (url != null && !url.isEmpty()) {
+                Glide.with(context)
+                        .load(url)
+                        .placeholder(R.drawable.ic_recycle) // Show while loading
+                        .error(R.drawable.ic_recycle)       // Show if error
+                        .dontAnimate()                      // Prevent list flickering
+                        .into(target);
+            } else {
+                Glide.with(context)
+                        .load(R.drawable.ic_recycle)
+                        .dontAnimate()
+                        .into(target);
+            }
         }
 
         private void showPopup(WasteItem item, Context viewContext) {
@@ -219,29 +218,27 @@ public class WasteEncyclopediaFragment extends Fragment {
 
             popupName.setText(item.getItemName());
             popupPrep.setText(item.getPreparation());
-            popupRecyclable.setText("Recyclable: " + (item.isRecyclable() ? "Yes" : "No"));
-            popupHazardous.setText("Hazardous: " + (item.isHazardous() ? "Yes" : "No"));
 
-
-            String imageName = item.getImageName();
-            if (imageName != null && !imageName.isEmpty()) {
-                String drawableName = imageName.trim().toLowerCase();
-                if (drawableName.contains(".")) {
-                    drawableName = drawableName.substring(0, drawableName.lastIndexOf('.'));
-                }
-                int resId = viewContext.getResources().getIdentifier(drawableName, "drawable", viewContext.getPackageName());
-                if (resId != 0) {
-                    Glide.with(viewContext)
-                            .load(resId)
-                            .placeholder(R.drawable.ic_launcher_background)
-                            .error(R.drawable.ic_warning)
-                            .into(popupImg);
-                } else {
-                    popupImg.setImageResource(R.drawable.ic_launcher_background);
-                }
+            // Logic for Recyclable Text
+            if(item.isRecyclable()) {
+                popupRecyclable.setText("Recyclable: Yes");
+                popupRecyclable.setTextColor(Color.parseColor("#2E7D32")); // Green
             } else {
-                popupImg.setImageResource(R.drawable.ic_launcher_background);
+                popupRecyclable.setText("Recyclable: No");
+                popupRecyclable.setTextColor(Color.RED);
             }
+
+            // Logic for Hazardous Text
+            if(item.isHazardous()) {
+                popupHazardous.setText("Hazardous: Yes");
+                popupHazardous.setTextColor(Color.RED);
+            } else {
+                popupHazardous.setText("Hazardous: No");
+                popupHazardous.setTextColor(Color.parseColor("#2E7D32")); // Green
+            }
+
+            // Use the same helper for popup image
+            loadImage(viewContext, item.getImageSource(), popupImg);
 
             closeButton.setOnClickListener(v -> dialog.dismiss());
             dialog.show();
