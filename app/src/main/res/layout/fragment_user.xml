@@ -73,18 +73,38 @@
         app:layout_constraintBottom_toBottomOf="@+id/ivProfilePicture"
         app:layout_constraintEnd_toEndOf="@+id/ivProfilePicture" />
 
-    <TextView
-        android:id="@+id/tvProfileUsername"
+    <LinearLayout
+        android:id="@+id/nameContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:layout_marginTop="12dp"
-        android:text="Loading Name..."
-        android:textColor="#000000"
-        android:textSize="22sp"
-        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivProfilePicture" />
+        app:layout_constraintTop_toBottomOf="@+id/ivProfilePicture">
+
+        <TextView
+            android:id="@+id/tvProfileUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Loading Name..."
+            android:textColor="#000000"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end"/>
+
+        <ImageButton
+            android:id="@+id/btnEditName"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/baseline_edit_24"
+            app:tint="#2E7D32"
+            android:contentDescription="Edit Name" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvProfileEmail"
@@ -96,7 +116,7 @@
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvProfileUsername" />
+        app:layout_constraintTop_toBottomOf="@+id/nameContainer" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardUserStats"

@@ -12,9 +12,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.text.InputType;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -25,6 +31,7 @@ import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,6 +39,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -41,7 +49,7 @@ import java.util.Map;
 public class UserFragment extends Fragment {
 
     private static final String TAG = "UserFragment";
-
+    private ImageButton btnEditName;
     // UI Components
     private TextView tvUsername, tvEmail, tvJoinedDate, tvImpactScore;
     private ImageView ivProfilePicture, imgBadgeBronze, imgBadgeSilver, imgBadgeGold;
@@ -112,6 +120,7 @@ public class UserFragment extends Fragment {
         btnDeleteAccount = view.findViewById(R.id.btnDeleteAccount);
         btnLogout = view.findViewById(R.id.btnLogout);
         fabChangePic = view.findViewById(R.id.fabChangeProfilePic);
+        btnEditName = view.findViewById(R.id.btnEditName);
 
         View btnBack = view.findViewById(R.id.btn_back_manual);
         if (btnBack != null) {
@@ -126,6 +135,7 @@ public class UserFragment extends Fragment {
             Navigation.findNavController(view).navigate(R.id.action_userFragment_to_loginFragment);
         });
 
+        btnEditName.setOnClickListener(v -> showEditNameDialog());
         fabChangePic.setOnClickListener(v -> openFileChooser());
 
         btnHistoryLog.setOnClickListener(v ->
@@ -201,6 +211,67 @@ public class UserFragment extends Fragment {
         }
     }
 
+    private void showEditNameDialog() {
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_edit_name, null);
+
+        TextInputEditText etName = dialogView.findViewById(R.id.etNewName);
+        Button btnSave = dialogView.findViewById(R.id.btnSave);
+        Button btnCancel = dialogView.findViewById(R.id.btnCancel);
+
+        etName.setText(tvUsername.getText().toString());
+        etName.setSelection(etName.getText().length()); // Move cursor to end
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setView(dialogView); // Set the custom view
+        AlertDialog dialog = builder.create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        btnSave.setOnClickListener(v -> {
+            String newName = etName.getText().toString().trim();
+            if (!newName.isEmpty()) {
+                updateNameInFirebase(newName);
+                dialog.dismiss();
+            } else {
+                etName.setError("Name cannot be empty");
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void updateNameInFirebase(String newName) {
+        FirebaseUser user = auth.getCurrentUser();
+        if (user == null) return;
+
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setDisplayName(newName)
+                .build();
+
+        user.updateProfile(profileUpdates).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Log.d(TAG, "User profile updated.");
+
+                db.collection("users").document(user.getUid())
+                        .update("name", newName)
+                        .addOnSuccessListener(aVoid -> {
+                            tvUsername.setText(newName);
+                            Toast.makeText(getContext(), "Name updated successfully!", Toast.LENGTH_SHORT).show();
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(getContext(), "Failed to update database.", Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "Error updating Firestore", e);
+                        });
+            } else {
+                Toast.makeText(getContext(), "Failed to update profile.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private void deleteUserAccount() {
         FirebaseUser user = auth.getCurrentUser();
         if (user == null) {
@@ -209,40 +280,47 @@ public class UserFragment extends Fragment {
         }
         String uid = user.getUid();
 
-        // 1. Delete Firestore data
+        // 1. Delete Firestore User Data
         db.collection("users").document(uid).delete()
-            .addOnSuccessListener(aVoid -> {
-                Log.d(TAG, "User data from users collection deleted successfully.");
-                // 2. Delete Impact Tracker data
-                db.collection("impact_tracker").document(uid).delete()
-                    .addOnSuccessListener(aVoid1 -> {
-                        Log.d(TAG, "User data from impact_tracker collection deleted successfully.");
-                        // 3. Delete Storage data
-                        if (storageReference != null) {
-                            storageReference.delete()
-                                .addOnSuccessListener(aVoid2 -> Log.d(TAG, "User profile image deleted successfully."))
-                                .addOnFailureListener(e -> Log.e(TAG, "Error deleting profile image.", e));
-                        }
-                        // 4. Delete user auth
-                        user.delete()
-                            .addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(getContext(), "Account deleted successfully.", Toast.LENGTH_LONG).show();
-                                    Navigation.findNavController(getView()).navigate(R.id.action_userFragment_to_loginFragment);
+                .addOnCompleteListener(task1 -> {
+                    Log.d(TAG, "Step 1: User Firestore Data processed.");
+
+                    // 2. Delete Impact Tracker Data (Using OnComplete to continue even if file missing)
+                    db.collection("impact_tracker").document(uid).delete()
+                            .addOnCompleteListener(task2 -> {
+                                Log.d(TAG, "Step 2: Impact Tracker Data processed.");
+
+                                // 3. Attempt to delete Profile Picture
+                                if (storageReference != null) {
+                                    storageReference.delete().addOnCompleteListener(task3 -> {
+                                        // Whether image delete SUCCEEDED or FAILED (e.g. no image),
+                                        // we NOW proceed to delete the account.
+                                        // This ensures we don't delete the account before trying to delete the image.
+                                        performAuthDeletion(user);
+                                    });
                                 } else {
-                                    if (task.getException() instanceof FirebaseAuthRecentLoginRequiredException) {
-                                        Toast.makeText(getContext(), "This action requires recent authentication. Please log out and log in again to delete your account.", Toast.LENGTH_LONG).show();
-                                        Log.w(TAG, "Error deleting user account: requires recent login", task.getException());
-                                    } else {
-                                        Toast.makeText(getContext(), "Failed to delete account. Please try again.", Toast.LENGTH_SHORT).show();
-                                        Log.e(TAG, "Error deleting user account", task.getException());
-                                    }
+                                    // No storage reference? Skip straight to Auth delete
+                                    performAuthDeletion(user);
                                 }
                             });
-                    })
-                    .addOnFailureListener(e -> Log.e(TAG, "Error deleting impact_tracker data.", e));
-            })
-            .addOnFailureListener(e -> Log.e(TAG, "Error deleting users data.", e));
+                });
+    }
+
+    // Helper method to keep the code clean
+    private void performAuthDeletion(FirebaseUser user) {
+        user.delete().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(getContext(), "Account deleted successfully.", Toast.LENGTH_LONG).show();
+                Navigation.findNavController(getView()).navigate(R.id.action_userFragment_to_loginFragment);
+            } else {
+                if (task.getException() instanceof FirebaseAuthRecentLoginRequiredException) {
+                    Toast.makeText(getContext(), "Security: Please Log Out and Log In again to delete account.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getContext(), "Failed to delete account.", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error deleting auth", task.getException());
+                }
+            }
+        });
     }
 
     private void loadUserData() {
