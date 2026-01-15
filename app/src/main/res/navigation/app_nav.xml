@@ -55,6 +55,10 @@
         app:destination="@id/loginFragment"
         app:popUpTo="@id/app_nav"
         app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_homeFragment_to_userFragment"
+            app:destination="@id/userFragment" />
     </fragment>
 
     <fragment
@@ -86,4 +90,17 @@
         android:name="com.example.ecolens.DiaryFragment"
         android:label="fragment_diary"
         tools:layout="@layout/fragment_diary" />
+
+    <fragment
+        android:id="@+id/userFragment"
+        android:name="com.example.ecolens.UserFragment"
+        android:label="User Profile"
+        tools:layout="@layout/fragment_user" >
+
+        <action
+            android:id="@+id/action_userFragment_to_loginFragment"
+             app:destination="@id/loginFragment"
+            app:popUpTo="@id/app_nav"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.view.animation.DecelerateInterpolator;
@@ -69,6 +70,14 @@ public class HomeFragment extends Fragment {
             greetingDisplay.setText(getGreeting());
         }
 
+        //profile button
+        ImageButton btnProfile = view.findViewById(R.id.profile_button);
+        if(btnProfile != null){
+            btnProfile.setOnClickListener(v ->{
+                Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_userFragment);
+            });
+        }
+
         // Diary Button
         Button btnDiary = view.findViewById(R.id.btnDiary);
         if (btnDiary != null) {
@@ -86,17 +95,31 @@ public class HomeFragment extends Fragment {
 
     // username
     private void fetchUserName() {
-        String uid = auth.getCurrentUser().getUid();
+        FirebaseUser user = auth.getCurrentUser();
+        if (user == null) {
+            if (usernameDisplay != null) usernameDisplay.setText("User!");
+            return;
+        }
+        String uid = user.getUid();
         db.collection("users").document(uid).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         String name = documentSnapshot.getString("name");
-                        if (name != null && usernameDisplay != null) {
-                            usernameDisplay.setText(name);
+                        if (name != null && !name.isEmpty() && usernameDisplay != null) {
+                            usernameDisplay.setText(name + "!");
+                        } else if (usernameDisplay != null) {
+                            usernameDisplay.setText("User!");
                         }
+                    } else if (usernameDisplay != null) { // Document doesn't exist
+                        usernameDisplay.setText("User!");
                     }
                 })
-                .addOnFailureListener(e -> Log.e("HomeFragment", "Error fetching name", e));
+                .addOnFailureListener(e -> {
+                    Log.e("HomeFragment", "Error fetching name", e);
+                    if (usernameDisplay != null) {
+                        usernameDisplay.setText("User!"); // Also set placeholder on failure
+                    }
+                });
     }
 
     // greeting message
@@ -192,10 +215,15 @@ public class HomeFragment extends Fragment {
         String yesDate = sdf.format(cal.getTime());
 
         long displayStreak = currentStreak;
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        String todayDate = sdf.format(cal.getTime());
 
-        //streak logic
+        cal.add(java.util.Calendar.DAY_OF_YEAR, -1);
+        String yesDate = sdf.format(cal.getTime());
+
+        long displayStreak = currentStreak;
+
         if (lastDate != null && (lastDate.equals(todayDate) || lastDate.equals(yesDate))) {
-            // Streak is safe (logged in today or yesterday). Keep it.
             displayStreak = currentStreak;
         } else {
             // Missed a day! Reset to 0 visually (so they know they have to recycle to start again)
@@ -204,6 +232,6 @@ public class HomeFragment extends Fragment {
                     .addOnFailureListener(e -> Log.e("HomeFragment", "Failed to reset streak", e));
         }
 
-        tvStreak.setText("🔥 " + displayStreak + " Day Streak");
+        tvStreak.setText("🔥 " + currentStreak + " Day Streak");
     }
 }
