@@ -14,7 +14,7 @@ public class GarbageAnalyzer implements ImageAnalysis.Analyzer {
     private final OnResultListener listener;
     private long lastTimeStamp = 0;
     private static final long INTERVAL = 500;
-    private static final float CROP_SCALE = 1f;
+    private static final float CROP_SCALE = 0.8f;
 
     public interface OnResultListener {
         void onResult(String label, float score);
@@ -52,14 +52,14 @@ public class GarbageAnalyzer implements ImageAnalysis.Analyzer {
         int xOffset = (rotatedBitmap.getWidth() - cropDimension) / 2;
         int yOffset = (rotatedBitmap.getHeight() - cropDimension) / 2;
 
-        // Create the cropped square
+        // create the cropped square
         Bitmap croppedBitmap = Bitmap.createBitmap(
                 rotatedBitmap, xOffset, yOffset, cropDimension, cropDimension
         );
 
-        // Classify
-        saveBitmapForDebugging(croppedBitmap);
-        // The classifier will resize this crop down to 224x224 automatically
+        // debug
+        //saveBitmapForDebugging(croppedBitmap);
+
         List<GarbageClassifier.ClassificationResult> results = classifier.classify(croppedBitmap);
 
         // send result

@@ -115,11 +115,14 @@ public class ScannerFragment extends Fragment {
                 imageAnalysis.setAnalyzer(cameraExecutor,
                         new GarbageAnalyzer(garbageClassifier, new GarbageAnalyzer.OnResultListener() {
                             @Override
-                            public void onResult(String inLabel, float score) {
-                                String label = inLabel.trim();
-                                System.out.println(label);
-                                System.out.println(score);
-                                System.out.println(lastLabel);
+                            public void onResult(String outputLabel, float score) {
+                                //clean the label to fix issues.
+                                String label = outputLabel.trim();
+
+                                System.out.println("---------------------- AI DEBUG ----------------------");
+                                System.out.println("Detected: " + label);
+                                System.out.println("Confidence: " + score);
+                                System.out.println("Last Detected: " + lastLabel);
 
                                 if(consecutiveLowConfidence >= 3) {
                                     //FIX THE ISSUES
@@ -133,21 +136,17 @@ public class ScannerFragment extends Fragment {
                                     }
                                 }
 
-                                System.out.println("LOW SCORE" + consecutiveLowConfidence);
                                 if(!label.equals("plastic") && !label.equals("paper") && !label.equals("glass") && !label.equals("metal")) {
                                     consecutiveLowConfidence++;
-                                    System.out.println("UNKNOWN TYPE");
                                     return;
                                 }
 
                                 if(score < 0.5){
                                     consecutiveLowConfidence++;
-                                    System.out.println("LOW SCORE!!");
                                     return;
                                 }
                                 consecutiveLowConfidence = 0;
 
-                                System.out.println("PROCEED" + consecutiveTimes);
                                 if(consecutiveTimes == 0) {
                                     lastLabel = label;
                                 }
