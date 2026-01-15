@@ -207,7 +207,7 @@
                 android:layout_marginStart="4dp"
                 android:text="@string/loading"
                 android:textColor="@color/eco_green_primary"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/imgTrophy"
                 app:layout_constraintStart_toEndOf="@+id/imgTrophy"
@@ -218,12 +218,13 @@
                 android:id="@+id/btnDiary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="12dp"
                 android:text="@string/diary"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/imgTrophy"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/imgTrophy" />
+                app:layout_constraintTop_toTopOf="@+id/imgTrophy"
+                app:layout_constraintVertical_bias="0.0" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
