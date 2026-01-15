@@ -52,7 +52,8 @@ public class UserFragment extends Fragment {
     private ImageButton btnEditName;
     // UI Components
     private TextView tvUsername, tvEmail, tvJoinedDate, tvImpactScore;
-    private ImageView ivProfilePicture, imgBadgeBronze, imgBadgeSilver, imgBadgeGold;
+    private ImageView ivProfilePicture, imgBadgeBronze, imgBadgeSilver, imgBadgeGold, imgBadgePlatinum, imgBadgeDiamond;
+    private Map<String, com.google.firebase.Timestamp> tierDates = new HashMap<>();
     private TextView btnHistoryLog;
     private Button btnLogout, btnChangePassword, btnDeleteAccount;
     private FloatingActionButton fabChangePic;
@@ -115,6 +116,8 @@ public class UserFragment extends Fragment {
         imgBadgeBronze = view.findViewById(R.id.imgBadgeBronze);
         imgBadgeSilver = view.findViewById(R.id.imgBadgeSilver);
         imgBadgeGold = view.findViewById(R.id.imgBadgeGold);
+        imgBadgePlatinum = view.findViewById(R.id.imgBadgePlatinum);
+        imgBadgeDiamond = view.findViewById(R.id.imgBadgeDiamond);
         btnHistoryLog = view.findViewById(R.id.btnHistoryLog);
         btnChangePassword = view.findViewById(R.id.btnChangePassword);
         btnDeleteAccount = view.findViewById(R.id.btnDeleteAccount);
@@ -347,51 +350,132 @@ public class UserFragment extends Fragment {
             }
         }).addOnFailureListener(e -> Log.e(TAG, "Error loading user data", e));
 
-        // Load user impact data
         db.collection("impact_tracker").document(uid).get().addOnSuccessListener(document -> {
             double totalScore = 0.0;
-            if (document.exists() && document.contains("gross_footprint") && document.get("gross_footprint")!=null) {
-                totalScore = document.getDouble("gross_footprint");
+            if (document.exists()) {
+                if (document.contains("gross_footprint") && document.get("gross_footprint") != null) {
+                    totalScore = document.getDouble("gross_footprint");
+                }
 
-            }else{
-                totalScore=0.0;
+                if (document.contains("tier_dates") && document.get("tier_dates") != null) {
+                    tierDates = (Map<String, com.google.firebase.Timestamp>) document.get("tier_dates");
+                }
             }
+
             tvImpactScore.setText(String.format(Locale.getDefault(), "%.2f kg", totalScore));
-            updateBadges(totalScore);
+            checkAndSaveTiers(uid, totalScore);
+
         }).addOnFailureListener(e -> {
             Log.e(TAG, "Error loading impact data", e);
-            tvImpactScore.setText("0.00 kg");
-            updateBadges(0.0);
         });
     }
 
-    private void updateBadges(double score) {
-        // Colors
-        int colorBronze = 0xFFCD7F32;
-        int colorSilver = 0xFFC0C0C0;
-        int colorGold   = 0xFFFFD700;
-        int colorLocked = 0xFFE0E0E0; // Light Gray
+    private void updateBadgesUI(double score) {
+        // 1. Define Colors
+        int colorBronze   = 0xFFCD7F32;
+        int colorSilver   = 0xFFC0C0C0;
+        int colorGold     = 0xFFFFD700;
+        int colorPlatinum = 0xFFE5E4E2; // Shiny Gray/White
+        int colorDiamond  = 0xFFB9F2FF; // Light Cyan/Blue
 
-        // Bronze is always unlocked
-        imgBadgeBronze.setColorFilter(colorBronze, PorterDuff.Mode.SRC_IN);
-        imgBadgeBronze.setAlpha(1.0f);
+        // 2. Update Visuals (Helper method below)
+        configureBadge(imgBadgeBronze,   score >= 0,   colorBronze,   "bronze",   "Bronze Tier");
+        configureBadge(imgBadgeSilver,   score >= 10,  colorSilver,   "silver",   "Silver Tier");
+        configureBadge(imgBadgeGold,     score >= 50,  colorGold,     "gold",     "Gold Tier");
+        configureBadge(imgBadgePlatinum, score >= 100, colorPlatinum, "platinum", "Platinum Tier");
+        configureBadge(imgBadgeDiamond,  score >= 500, colorDiamond,  "diamond",  "Diamond Tier");
+    }
 
-        // 2. Silver (Unlock at 10kg)
-        if (score >= 10.0) {
-            imgBadgeSilver.setColorFilter(colorSilver, PorterDuff.Mode.SRC_IN);
-            imgBadgeSilver.setAlpha(1.0f);
+    // Helper to set color, alpha, and click listener
+    private void configureBadge(ImageView badge, boolean isUnlocked, int color, String key, String tierName) {
+        if (isUnlocked) {
+            // UNLOCKED STATE
+            badge.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+            badge.setAlpha(1.0f);
+
+            badge.setOnClickListener(v -> {
+                if (tierDates.containsKey(key)) {
+                    // Show the date
+                    com.google.firebase.Timestamp ts = tierDates.get(key);
+                    if (ts != null) {
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
+                        Toast.makeText(getContext(), tierName + " unlocked on: " + sdf.format(ts.toDate()), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getContext(), tierName + " Unlocked!", Toast.LENGTH_SHORT).show();
+                }
+            });
+
         } else {
-            imgBadgeSilver.setColorFilter(colorLocked, PorterDuff.Mode.SRC_IN);
-            imgBadgeSilver.setAlpha(0.5f); // Make it look faded
+            // LOCKED STATE
+            badge.setColorFilter(0xFFE0E0E0, PorterDuff.Mode.SRC_IN); // Gray
+            badge.setAlpha(0.4f); // Faded
+
+            badge.setOnClickListener(v ->
+                    Toast.makeText(getContext(), tierName + " is locked.", Toast.LENGTH_SHORT).show()
+            );
+        }
+    }
+
+    private void checkAndSaveTiers(String uid, double score) {
+        Map<String, Object> updates = new HashMap<>();
+        com.google.firebase.Timestamp now = com.google.firebase.Timestamp.now();
+
+        if (!tierDates.containsKey("bronze")) {
+            updates.put("tier_dates.bronze", now);
+            tierDates.put("bronze", now);
+            logTierHistory(uid, "Bronze");
         }
 
-        // 3. Gold (Unlock at 50kg)
-        if (score >= 50.0) {
-            imgBadgeGold.setColorFilter(colorGold, PorterDuff.Mode.SRC_IN);
-            imgBadgeGold.setAlpha(1.0f);
-        } else {
-            imgBadgeGold.setColorFilter(colorLocked, PorterDuff.Mode.SRC_IN);
-            imgBadgeGold.setAlpha(0.5f); // Make it look faded
+        if (score >= 10.0 && !tierDates.containsKey("silver")) {
+            updates.put("tier_dates.silver", now);
+            tierDates.put("silver", now);
+            logTierHistory(uid, "Silver");
         }
+
+        if (score >= 50.0 && !tierDates.containsKey("gold")) {
+            updates.put("tier_dates.gold", now);
+            tierDates.put("gold", now);
+            logTierHistory(uid, "Gold");
+        }
+
+        if (score >= 100.0 && !tierDates.containsKey("platinum")) {
+            updates.put("tier_dates.platinum", now);
+            tierDates.put("platinum", now);
+            logTierHistory(uid, "Platinum");
+        }
+
+        if (score >= 500.0 && !tierDates.containsKey("diamond")) {
+            updates.put("tier_dates.diamond", now);
+            tierDates.put("diamond", now);
+            logTierHistory(uid, "Diamond");
+        }
+
+        if (!updates.isEmpty()) {
+            db.collection("impact_tracker").document(uid)
+                    .update(updates)
+                    .addOnSuccessListener(aVoid -> Log.d(TAG, "New tier dates saved!"))
+                    .addOnFailureListener(e -> Log.e(TAG, "Failed to save tier dates", e));
+        }
+
+        updateBadgesUI(score);
+    }
+
+    private void logTierHistory(String uid, String tierName) {
+        Map<String, Object> historyData = new HashMap<>();
+
+        // Standard fields for your history list
+        historyData.put("timestamp", com.google.firebase.Timestamp.now());
+        historyData.put("amount", 0.0); // 0.0 because it's not a waste deposit
+
+        // The "Title" for the history list
+        // NOTE: Ensure your DiaryAdapter can display this field!
+        historyData.put("wasteType", "Unlocked " + tierName + " Tier! 🏆");
+
+        db.collection("impact_tracker").document(uid)
+                .collection("history")
+                .add(historyData)
+                .addOnSuccessListener(ref -> Log.d(TAG, "Tier unlock logged to history: " + tierName))
+                .addOnFailureListener(e -> Log.e(TAG, "Failed to log tier history", e));
     }
 }

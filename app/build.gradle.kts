@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.fragment)
     implementation(libs.cardview)
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation(libs.swiperefreshlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

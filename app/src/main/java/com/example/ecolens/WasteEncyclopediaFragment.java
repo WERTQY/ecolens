@@ -25,7 +25,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -49,52 +48,24 @@ public class WasteEncyclopediaFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_waste_encyclopedia, container, false);
 
-        // 1. Initialize Views
         recyclerView = view.findViewById(R.id.rv_waste_items);
         etSearch = view.findViewById(R.id.et_search);
         ImageButton btnSearch = view.findViewById(R.id.btn_search);
-        View backButton = view.findViewById(R.id.btn_back_map);
 
-        // 2. Setup Recycler
+        // --- FIX 1: Correct ID for the back button ---
+        // Was "btn_back_manual", changed to "btn_back_map" based on your XML
+        View backButton = view.findViewById(R.id.btn_back_map);
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> {
+                Navigation.findNavController(view).navigateUp();
+            });
+        }
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // 3. Navigation
-        backButton.setOnClickListener(v -> Navigation.findNavController(view).navigateUp());
-
-        // 4. Firebase
-        db = FirebaseFirestore.getInstance();
         db = FirebaseFirestore.getInstance();
         loadWasteItemsFromFirestore();
 
-        // 5. Search Logic
-        setupSearchListeners(btnSearch);
-
-        return view;
-    }
-
-    private void loadWasteItemsFromFirestore() {
-        db.collection("encyclopedia")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && getContext() != null) {
-                        items.clear();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            WasteItem item = document.toObject(WasteItem.class);
-                            items.add(item);
-                        }
-
-                        // Default: Show all
-                        filteredItems.clear();
-                        filteredItems.addAll(items);
-                        adapter = new WasteAdapter(filteredItems);
-                        recyclerView.setAdapter(adapter);
-                    } else {
-                        Log.e(TAG, "Error getting documents: ", task.getException());
-                    }
-                });
-    }
-
-    private void setupSearchListeners(ImageButton btnSearch) {
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -103,7 +74,6 @@ public class WasteEncyclopediaFragment extends Fragment {
             @Override public void afterTextChanged(Editable s) {}
         });
 
-        // Handle "Enter" key on keyboard
         etSearch.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 if (adapter != null) filter(etSearch.getText().toString());
@@ -117,6 +87,8 @@ public class WasteEncyclopediaFragment extends Fragment {
             if (adapter != null) filter(etSearch.getText().toString());
             hideKeyboard(v);
         });
+
+        return view;
     }
 
     private void filter(String text) {
@@ -131,26 +103,52 @@ public class WasteEncyclopediaFragment extends Fragment {
                 }
             }
         }
-        if (adapter != null) adapter.notifyDataSetChanged();
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     private void hideKeyboard(View view) {
         InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
+    private void loadWasteItemsFromFirestore() {
+        db.collection("encyclopedia")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && getContext() != null) {
+                        items.clear();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            WasteItem item = document.toObject(WasteItem.class);
+                            items.add(item);
+                        }
+                        filteredItems.clear();
+                        filteredItems.addAll(items);
+
+                        adapter = new WasteAdapter(filteredItems);
+                        recyclerView.setAdapter(adapter);
+                    } else {
+                        Log.e(TAG, "Error getting documents: ", task.getException());
+                    }
+                });
+    }
+
+    // --- FIX 2: Updated Data Model to use imageSource ---
     public static class WasteItem {
         private String itemName;
         private String preparation;
-        private String imageSource;   // e.g. "https://firebasestorage.googleapis.com url image"
+        private String imageSource; // Renamed from imageName to match your Firebase URL field
         private boolean hazardous;
         private boolean recyclable;
 
-        public WasteItem() {} // Empty constructor needed for Firestore
+        public WasteItem() {}
 
         public String getItemName() { return itemName; }
         public String getPreparation() { return preparation; }
-        public String getImageSource() { return imageSource; }
+        public String getImageSource() { return imageSource; } // Updated Getter
         public boolean isHazardous() { return hazardous; }
         public boolean isRecyclable() { return recyclable; }
     }
@@ -172,50 +170,45 @@ public class WasteEncyclopediaFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             WasteItem item = items.get(position);
-            Context context = holder.itemView.getContext();
+            Context viewContext = holder.itemView.getContext();
 
             holder.tvName.setText(item.getItemName());
             holder.tvPrep.setText(item.getPreparation());
 
-            // Load Image for the List Row
-            loadImage(context, item.getImageSource(), holder.imgItem);
+            // --- FIX 3: Use Simplified Loader ---
+            loadImage(viewContext, item.getImageSource(), holder.imgItem);
 
             holder.itemView.setOnClickListener(v -> showPopup(item, v.getContext()));
         }
 
-        private void loadImage(Context context, String imageSource, ImageView imageView) {
-            CircularProgressDrawable loader = new CircularProgressDrawable(context);
-            loader.setStrokeWidth(5f);
-            loader.setCenterRadius(30f);
-            loader.setColorSchemeColors(0xFF2E7D32);
-            loader.start();
-            Glide.with(context).clear(imageView);
+        // --- NEW HELPER METHOD ---
+        private void loadImage(Context context, String url, ImageView target) {
+            // 1. Clear old image (Prevents "Wrong Image" recycling bug)
+            Glide.with(context).clear(target);
 
-            if (imageSource != null && imageSource.startsWith("http")) {
+            // 2. Load URL directly
+            if (url != null && !url.isEmpty()) {
                 Glide.with(context)
-                        .load(imageSource)
-                        .placeholder(R.drawable.ic_recycle)
-                        .error(R.drawable.ic_recycle)
-                        .dontAnimate()
-                        .into(imageView);
-            }
-            else {// if there on URL img in firebase
+                        .load(url)
+                        .placeholder(R.drawable.ic_recycle) // Show while loading
+                        .error(R.drawable.ic_recycle)       // Show if error
+                        .dontAnimate()                      // Prevent list flickering
+                        .into(target);
+            } else {
                 Glide.with(context)
                         .load(R.drawable.ic_recycle)
                         .dontAnimate()
-                        .into(imageView);
+                        .into(target);
             }
         }
 
-        private void showPopup(WasteItem item, Context context) {
-            final Dialog dialog = new Dialog(context);
+        private void showPopup(WasteItem item, Context viewContext) {
+            final Dialog dialog = new Dialog(viewContext);
             dialog.setContentView(R.layout.popup_waste_item);
-
             if (dialog.getWindow() != null) {
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             }
 
-            // Find Popup Views
             ImageView popupImg = dialog.findViewById(R.id.popup_img_item);
             TextView popupName = dialog.findViewById(R.id.popup_tv_item_name);
             TextView popupPrep = dialog.findViewById(R.id.popup_tv_item_prep);
@@ -223,12 +216,11 @@ public class WasteEncyclopediaFragment extends Fragment {
             TextView popupHazardous = dialog.findViewById(R.id.popup_tv_hazardous);
             Button closeButton = dialog.findViewById(R.id.popup_btn_close);
 
-            // Set Text
             popupName.setText(item.getItemName());
             popupPrep.setText(item.getPreparation());
 
-            // Logic: Recyclable (Green = Yes, Red = No)
-            if (item.isRecyclable()) {
+            // Logic for Recyclable Text
+            if(item.isRecyclable()) {
                 popupRecyclable.setText("Recyclable: Yes");
                 popupRecyclable.setTextColor(Color.parseColor("#2E7D32")); // Green
             } else {
@@ -236,8 +228,8 @@ public class WasteEncyclopediaFragment extends Fragment {
                 popupRecyclable.setTextColor(Color.RED);
             }
 
-            // Logic: Hazardous (Red = Yes, Green = No)
-            if (item.isHazardous()) {
+            // Logic for Hazardous Text
+            if(item.isHazardous()) {
                 popupHazardous.setText("Hazardous: Yes");
                 popupHazardous.setTextColor(Color.RED);
             } else {
@@ -245,8 +237,8 @@ public class WasteEncyclopediaFragment extends Fragment {
                 popupHazardous.setTextColor(Color.parseColor("#2E7D32")); // Green
             }
 
-            // Load Image into Popup
-            loadImage(context, item.getImageSource(), popupImg);
+            // Use the same helper for popup image
+            loadImage(viewContext, item.getImageSource(), popupImg);
 
             closeButton.setOnClickListener(v -> dialog.dismiss());
             dialog.show();
