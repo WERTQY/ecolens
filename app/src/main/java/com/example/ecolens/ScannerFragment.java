@@ -74,7 +74,7 @@ public class ScannerFragment extends Fragment {
         confidenceText = view.findViewById(R.id.scanner_confidence_label);
         resultBackground = view.findViewById(R.id.scanner_result_background);
         MaterialToolbar toolbar = view.findViewById(R.id.scan_toolbar);
-        garbageClassifier = new GarbageClassifier(this.getContext(), 224);
+        garbageClassifier = new GarbageClassifier(this.getContext(), 400);
 
         consecutiveTimes = 0;
         consecutiveLowConfidence = 0;
@@ -115,10 +115,14 @@ public class ScannerFragment extends Fragment {
                 imageAnalysis.setAnalyzer(cameraExecutor,
                         new GarbageAnalyzer(garbageClassifier, new GarbageAnalyzer.OnResultListener() {
                             @Override
-                            public void onResult(String label, float score) {
-                                System.out.println(label);
-                                System.out.println(score);
-                                System.out.println(lastLabel);
+                            public void onResult(String outputLabel, float score) {
+                                //clean the label to fix issues.
+                                String label = outputLabel.trim();
+
+                                System.out.println("---------------------- AI DEBUG ----------------------");
+                                System.out.println("Detected: " + label);
+                                System.out.println("Confidence: " + score);
+                                System.out.println("Last Detected: " + lastLabel);
 
                                 if(consecutiveLowConfidence >= 3) {
                                     //FIX THE ISSUES

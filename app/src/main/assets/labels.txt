@@ -7,4 +7,3 @@ metal
 paper
 plastic
 shoes
-trash
