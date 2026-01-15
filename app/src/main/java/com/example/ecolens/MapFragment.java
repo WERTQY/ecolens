@@ -3,6 +3,8 @@ package com.example.ecolens;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.health.connect.datatypes.ExerciseRoute;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +28,8 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -33,9 +37,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.chip.ChipGroup;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -48,12 +53,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private String currentFilter = "All";
     private String currentSearchQuery = "";
     private ImageButton btnBackMap;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private FloatingActionButton btnMyLocation;
 
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
                     // Permission granted. Enable the My Location layer.
                     enableMyLocation();
+                    getDeviceLocation();
                 } else {
                     // Permission was denied. Show a message.
                     Toast.makeText(getContext(), "Location permission denied. Cannot show current location.", Toast.LENGTH_LONG).show();
@@ -67,6 +75,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         setHasOptionsMenu(true);
         db = FirebaseFirestore.getInstance();
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 
         btnBackMap = view.findViewById(R.id.btn_back_map);
         btnBackMap.setOnClickListener(new View.OnClickListener(){
@@ -76,12 +85,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
+        btnMyLocation = view.findViewById(R.id.btn_my_location);
+        btnMyLocation.setOnClickListener(v -> {
+            getDeviceLocation();
+        });
+
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
 
-        setupFilterButtons(view);
+        setupChipFilters(view);
         return view;
     }
 
@@ -89,14 +103,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // 1. Always set a default starting position to prevent a blank map.
+        int topPadding = (int)(150 * getResources().getDisplayMetrics().density);
+        mMap.setPadding(0, topPadding, 0, 0);
+        mMap.setPadding(0, topPadding,0,0);
+        // default location
         LatLng defaultLocation = new LatLng(3.1390, 101.6869);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 12));
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
 
-        // 2. Check for permission to enable the blue dot and the "My Location" button.
         checkLocationPermissionAndEnableMap();
 
-        // 3. Load the recycling center data.
         fetchRecyclingCenters();
 
         mMap.setOnInfoWindowClickListener(marker -> {
@@ -114,11 +130,34 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
+    private void getDeviceLocation() {
+        try {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+                fusedLocationProviderClient.getLastLocation()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful() && task.getResult() != null) {
+                                Location location = task.getResult();
+                                LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+
+                                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15));
+                            } else {
+                                Toast.makeText(getContext(), "Unable to find current location", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            } else {
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+            }
+        } catch (SecurityException e) {
+            Log.e("EcoLens", "getDeviceLocation: SecurityException: " + e.getMessage());
+        }
+    }
     private void checkLocationPermissionAndEnableMap() {
         if (ContextCompat.checkSelfPermission(
                 requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED) {
             enableMyLocation();
+            getDeviceLocation();
         } else {
             // Permission is not granted. Request it.
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
@@ -213,35 +252,29 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
         }
     }
+    //update filter
+    private void setupChipFilters(View view) {
+        ChipGroup chipGroup = view.findViewById(R.id.filterChipGroup);
 
-    private void setupFilterButtons(View view) {
-        Button btnAll = view.findViewById(R.id.btnFilterAll);
-        Button btnEwaste = view.findViewById(R.id.btnFilterEwaste);
-        Button btnPaper = view.findViewById(R.id.btnFilterPaper);
-        Button btnFabric = view.findViewById(R.id.btnFilterFabric);
-        Button btnGlass = view.findViewById(R.id.btnFilterGlass);
+        // This listener triggers whenever a different Chip is selected
+        chipGroup.setOnCheckedChangeListener((group, checkedId) -> {
 
-        btnAll.setOnClickListener(v -> {
-            currentFilter = "All";
-            filterAndShowMarkers();
-        });
-        btnEwaste.setOnClickListener(v -> {
-            currentFilter = "E-Waste";
-            filterAndShowMarkers();
-        });
-        btnPaper.setOnClickListener(v -> {
-            currentFilter = "Paper";
-            filterAndShowMarkers();
-        });
-        btnFabric.setOnClickListener(v -> {
-            currentFilter = "Fabric";
-            filterAndShowMarkers();
-        });
-        btnGlass.setOnClickListener(v -> {
-            currentFilter = "Glass";
+            if (checkedId == R.id.chip_all) {
+                currentFilter = "All";
+            } else if (checkedId == R.id.chip_ewaste) {
+                currentFilter = "E-Waste";
+            } else if (checkedId == R.id.chip_paper) {
+                currentFilter = "Paper";
+            } else if (checkedId == R.id.chip_fabric) {
+                currentFilter = "Fabric";
+            } else if (checkedId == R.id.chip_glass) {
+                currentFilter = "Glass";
+            }
+
             filterAndShowMarkers();
         });
     }
+
     //helper method to fix map problem
     private com.google.android.gms.maps.model.BitmapDescriptor bitmapDescriptorFromVector(android.content.Context context, int vectorResId) {
         android.graphics.drawable.Drawable vectorDrawable = androidx.core.content.ContextCompat.getDrawable(context, vectorResId);
