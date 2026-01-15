@@ -30,7 +30,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class CarbonFootprintFragment extends Fragment {
@@ -233,7 +235,10 @@ public class CarbonFootprintFragment extends Fragment {
                 // 5. Use set(merge) to CREATE or UPDATE the document.
                 // This is the key change to handle new users correctly.
                 userImpactDocRef.set(data, SetOptions.merge())
-                        .addOnSuccessListener(aVoid -> Log.d(TAG, "Set with merge successful!"))
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d(TAG, "Set with merge successful!");
+                            updateStreakOnRecycle();
+                        })
                         .addOnFailureListener(e -> {
                             // If an error still occurs here, it's a fundamental rules mismatch,
                             // but this logic is now sound for create/update.
@@ -315,4 +320,47 @@ public class CarbonFootprintFragment extends Fragment {
 
         updateCalculateButtonState();
     }
+    private void updateStreakOnRecycle() {
+        if (userImpactDocRef == null) return;
+
+        userImpactDocRef.get().addOnSuccessListener(document -> {
+            long currentStreak = 0;
+            String lastDate = "";
+
+            if (document.exists()) {
+                if (document.contains("streak")) currentStreak = document.getLong("streak");
+                if (document.contains("last_login_date")) lastDate = document.getString("last_login_date");
+            }
+
+            // Get Dates
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            String todayDate = sdf.format(cal.getTime());
+
+            cal.add(java.util.Calendar.DAY_OF_YEAR, -1);
+            String yesDate = sdf.format(cal.getTime());
+
+            long newStreak = currentStreak;
+            boolean needsUpdate = false;
+
+            if (lastDate != null && lastDate.equals(todayDate)) {
+            }
+            else if (lastDate != null && lastDate.equals(yesDate)) {
+                newStreak = currentStreak + 1;
+                needsUpdate = true;
+            }
+            else {
+                newStreak = 1;
+                needsUpdate = true;
+            }
+
+            if (needsUpdate) {
+                Map<String, Object> updates = new HashMap<>();
+                updates.put("streak", newStreak);
+                updates.put("last_login_date", todayDate);
+                userImpactDocRef.set(updates, SetOptions.merge());
+            }
+        });
+    }
+
 }
