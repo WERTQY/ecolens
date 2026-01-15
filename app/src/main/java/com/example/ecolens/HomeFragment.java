@@ -215,23 +215,14 @@ public class HomeFragment extends Fragment {
         String yesDate = sdf.format(cal.getTime());
 
         long displayStreak = currentStreak;
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-        String todayDate = sdf.format(cal.getTime());
-
-        cal.add(java.util.Calendar.DAY_OF_YEAR, -1);
-        String yesDate = sdf.format(cal.getTime());
-
-        long displayStreak = currentStreak;
 
         if (lastDate != null && (lastDate.equals(todayDate) || lastDate.equals(yesDate))) {
-            displayStreak = currentStreak;
         } else {
-            // Missed a day! Reset to 0 visually (so they know they have to recycle to start again)
             displayStreak = 0;
             userRef.update("streak", 0)
                     .addOnFailureListener(e -> Log.e("HomeFragment", "Failed to reset streak", e));
         }
 
-        tvStreak.setText("🔥 " + currentStreak + " Day Streak");
+        tvStreak.setText("🔥 " + displayStreak + " Day Streak");
     }
 }

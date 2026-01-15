@@ -336,47 +336,4 @@ public class CarbonFootprintFragment extends Fragment {
 
         updateCalculateButtonState();
     }
-    private void updateStreakOnRecycle() {
-        if (userImpactDocRef == null) return;
-
-        userImpactDocRef.get().addOnSuccessListener(document -> {
-            long currentStreak = 0;
-            String lastDate = "";
-
-            if (document.exists()) {
-                if (document.contains("streak")) currentStreak = document.getLong("streak");
-                if (document.contains("last_login_date")) lastDate = document.getString("last_login_date");
-            }
-
-            // Get Dates
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            java.util.Calendar cal = java.util.Calendar.getInstance();
-            String todayDate = sdf.format(cal.getTime());
-
-            cal.add(java.util.Calendar.DAY_OF_YEAR, -1);
-            String yesDate = sdf.format(cal.getTime());
-
-            long newStreak = currentStreak;
-            boolean needsUpdate = false;
-
-            if (lastDate != null && lastDate.equals(todayDate)) {
-            }
-            else if (lastDate != null && lastDate.equals(yesDate)) {
-                newStreak = currentStreak + 1;
-                needsUpdate = true;
-            }
-            else {
-                newStreak = 1;
-                needsUpdate = true;
-            }
-
-            if (needsUpdate) {
-                Map<String, Object> updates = new HashMap<>();
-                updates.put("streak", newStreak);
-                updates.put("last_login_date", todayDate);
-                userImpactDocRef.set(updates, SetOptions.merge());
-            }
-        });
-    }
-
 }
