@@ -108,8 +108,8 @@
 
             <TextView
                 android:id="@+id/carbon_footprint_value"
-                android:layout_width="216dp"
-                android:layout_height="85dp"
+                android:layout_width="189dp"
+                android:layout_height="77dp"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/frank_ruhl_libre_medium"
                 android:text="@string/_0_00"
@@ -192,26 +192,27 @@
                 android:id="@+id/imgTrophy"
                 android:layout_width="54dp"
                 android:layout_height="47dp"
-                android:layout_marginStart="28dp"
+                android:layout_marginStart="16dp"
                 android:contentDescription="@string/todo"
                 android:src="@drawable/ic_trophy"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvAchievementTitle"
-                app:layout_constraintVertical_bias="0.305" />
+                app:layout_constraintVertical_bias="0.297" />
 
             <TextView
                 android:id="@+id/tvTierName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="4dp"
                 android:text="@string/loading"
                 android:textColor="@color/eco_green_primary"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/imgTrophy"
                 app:layout_constraintStart_toEndOf="@+id/imgTrophy"
-                app:layout_constraintTop_toTopOf="@+id/imgTrophy" />
+                app:layout_constraintTop_toTopOf="@+id/imgTrophy"
+                app:layout_constraintVertical_bias="0.521" />
 
             <Button
                 android:id="@+id/btnDiary"

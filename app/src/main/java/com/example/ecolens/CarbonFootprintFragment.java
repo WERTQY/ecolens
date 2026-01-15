@@ -28,7 +28,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class CarbonFootprintFragment extends Fragment {
@@ -181,6 +183,53 @@ public class CarbonFootprintFragment extends Fragment {
         }
     }
 
+    private void updateStreakOnRecycle() {
+        if (userImpactDocRef == null) return;
+
+        userImpactDocRef.get().addOnSuccessListener(document -> {
+            long currentStreak = 0;
+            String lastDate = "";
+
+            if (document.exists()) {
+                if (document.contains("streak")) currentStreak = document.getLong("streak");
+                if (document.contains("last_login_date")) lastDate = document.getString("last_login_date");
+            }
+
+            // Get Dates
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            String todayDate = sdf.format(cal.getTime());
+
+            cal.add(java.util.Calendar.DAY_OF_YEAR, -1);
+            String yesDate = sdf.format(cal.getTime());
+
+            long newStreak = currentStreak;
+            boolean needsUpdate = false;
+
+            // --- REWARD LOGIC ---
+            if (lastDate != null && lastDate.equals(todayDate)) {
+                // already recycled today
+            }
+            else if (lastDate != null && lastDate.equals(yesDate)) {
+                // if recycled yesterday
+                newStreak = currentStreak + 1;
+                needsUpdate = true;
+            }
+            else {
+                // missed a day or broken streak
+                newStreak = 1;
+                needsUpdate = true;
+            }
+
+            if (needsUpdate) {
+                Map<String, Object> updates = new HashMap<>();
+                updates.put("streak", newStreak);
+                updates.put("last_login_date", todayDate);
+                userImpactDocRef.set(updates, SetOptions.merge());
+            }
+        });
+    }
+
     private void calculateCarbonFootprint() {
         double sessionTotal = 0;
         sessionTotal += getWeight(editTextPlastic) * EMISSION_FACTOR_PLASTIC;
@@ -210,7 +259,10 @@ public class CarbonFootprintFragment extends Fragment {
                 data.put("user_id", currentUser.getUid());
 
                 userImpactDocRef.set(data, SetOptions.merge())
-                        .addOnSuccessListener(aVoid -> Log.d(TAG, "Set with merge successful!"))
+                        .addOnSuccessListener(aVoid -> {
+                            Log.d(TAG, "Set with merge successful!");
+                            updateStreakOnRecycle();
+                        })
                         .addOnFailureListener(e -> {
                             Log.w(TAG, "Set with merge failed: ", e);
                         });
