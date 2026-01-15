@@ -75,7 +75,7 @@ dependencies {
     implementation(libs.datastore.preferences)
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("com.jakewharton.threetenabp:threetenabp:1.3.1")
-
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     val camerax_version = "1.3.0"
     implementation("androidx.camera:camera-core:$camerax_version")
     implementation("androidx.camera:camera-camera2:$camerax_version")
