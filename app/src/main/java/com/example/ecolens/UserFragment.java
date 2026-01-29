@@ -378,7 +378,7 @@ public class UserFragment extends Fragment {
         int colorPlatinum = 0xFFE5E4E2; // Shiny Gray/White
         int colorDiamond  = 0xFFB9F2FF; // Light Cyan/Blue
 
-        // 2. Update Visuals (Helper method below)
+        // 2. Update Visuals
         configureBadge(imgBadgeBronze,   score >= 0,   colorBronze,   "bronze",   "Bronze Tier");
         configureBadge(imgBadgeSilver,   score >= 10,  colorSilver,   "silver",   "Silver Tier");
         configureBadge(imgBadgeGold,     score >= 50,  colorGold,     "gold",     "Gold Tier");
@@ -386,7 +386,7 @@ public class UserFragment extends Fragment {
         configureBadge(imgBadgeDiamond,  score >= 500, colorDiamond,  "diamond",  "Diamond Tier");
     }
 
-    // Helper to set color, alpha, and click listener
+    // update badges helper
     private void configureBadge(ImageView badge, boolean isUnlocked, int color, String key, String tierName) {
         if (isUnlocked) {
             // UNLOCKED STATE
@@ -464,12 +464,11 @@ public class UserFragment extends Fragment {
     private void logTierHistory(String uid, String tierName) {
         Map<String, Object> historyData = new HashMap<>();
 
-        // Standard fields for your history list
+        // history list field
         historyData.put("timestamp", com.google.firebase.Timestamp.now());
-        historyData.put("amount", 0.0); // 0.0 because it's not a waste deposit
+        historyData.put("amount", 0.0);
 
-        // The "Title" for the history list
-        // NOTE: Ensure your DiaryAdapter can display this field!
+        // Display history list
         historyData.put("wasteType", "Unlocked " + tierName + " Tier! 🏆");
 
         db.collection("impact_tracker").document(uid)

@@ -25,7 +25,6 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.ViewHolder> 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Ensure you created item_history_log.xml from the previous step!
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_history_log, parent, false);
         return new ViewHolder(view);
     }

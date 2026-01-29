@@ -59,11 +59,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
-                    // Permission granted. Enable the My Location layer.
+                    // enable location
                     enableMyLocation();
                     getDeviceLocation();
                 } else {
-                    // Permission was denied. Show a message.
+                    // location denied
                     Toast.makeText(getContext(), "Location permission denied. Cannot show current location.", Toast.LENGTH_LONG).show();
                 }
             });
@@ -256,7 +256,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private void setupChipFilters(View view) {
         ChipGroup chipGroup = view.findViewById(R.id.filterChipGroup);
 
-        // This listener triggers whenever a different Chip is selected
+        // select through different chip
         chipGroup.setOnCheckedChangeListener((group, checkedId) -> {
 
             if (checkedId == R.id.chip_all) {

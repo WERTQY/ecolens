@@ -35,7 +35,6 @@ import java.util.Map;
 
 public class CarbonFootprintFragment extends Fragment {
 
-    // --- Views ---
     private EditText editTextPlastic, editTextPaper, editTextAluminium, editTextGlass, editTextOrganic;
     private Button buttonCalculate;
     private Button btn_ok;
@@ -44,12 +43,10 @@ public class CarbonFootprintFragment extends Fragment {
     private ImageView imageViewFootprint;
     private Group groupInputs;
 
-    // --- Firebase ---
     private DocumentReference userImpactDocRef;
     private FirebaseUser currentUser;
     private double grossTotal = 0.0;
 
-    // --- Constants ---
     private static final double EMISSION_FACTOR_PLASTIC = 1.3;
     private static final double EMISSION_FACTOR_PAPER = 0.9;
     private static final double EMISSION_FACTOR_ALUMINIUM = 8.1;
@@ -117,13 +114,11 @@ public class CarbonFootprintFragment extends Fragment {
         totalInput += getWeight(editTextGlass);
         totalInput += getWeight(editTextOrganic);
 
-        // If total > 0, enable the button. Otherwise, disable it.
+        // button enable if valid
         boolean hasValidInput = totalInput > 0;
-
         buttonCalculate.setEnabled(hasValidInput);
 
-        // Optional: Change the visual opacity (alpha) so user knows it's disabled
-        // 1.0f is fully visible, 0.5f is semi-transparent (dimmed)
+        //change the button display color
         buttonCalculate.setAlpha(hasValidInput ? 1.0f : 0.5f);
     }
     private void setupTextWatchers() {
@@ -138,7 +133,6 @@ public class CarbonFootprintFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                // Check inputs every time text changes
                 updateCalculateButtonState();
             }
         };
@@ -206,7 +200,7 @@ public class CarbonFootprintFragment extends Fragment {
             long newStreak = currentStreak;
             boolean needsUpdate = false;
 
-            // --- REWARD LOGIC ---
+            // streak logic
             if (lastDate != null && lastDate.equals(todayDate)) {
                 // already recycled today
             }
@@ -267,7 +261,7 @@ public class CarbonFootprintFragment extends Fragment {
                             Log.w(TAG, "Set with merge failed: ", e);
                         });
 
-                //SAVE HISTORY (For Diary) ---
+                //SAVE HISTORY (For Diary)
                 Map<String, Object> historyEntry = new HashMap<>();
                 historyEntry.put("amount", finalSessionTotal);
                 historyEntry.put("timestamp", com.google.firebase.Timestamp.now()); // Saves current Date & Time
