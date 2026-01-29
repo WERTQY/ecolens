@@ -88,8 +88,8 @@
 
     <View
         android:id="@+id/scanner_result_background"
-        android:layout_width="281dp"
-        android:layout_height="176dp"
+        android:layout_width="300dp"
+        android:layout_height="180dp"
         android:background="@drawable/popup_background"
         android:backgroundTint="#2E7D32"
         android:backgroundTintMode="multiply"

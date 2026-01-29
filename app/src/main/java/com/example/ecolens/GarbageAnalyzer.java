@@ -14,7 +14,7 @@ public class GarbageAnalyzer implements ImageAnalysis.Analyzer {
     private final OnResultListener listener;
     private long lastTimeStamp = 0;
     private static final long INTERVAL = 500;
-    private static final float CROP_SCALE = 0.8f;
+    private static final float CROP_SCALE = 0.75f;
 
     public interface OnResultListener {
         void onResult(String label, float score);
