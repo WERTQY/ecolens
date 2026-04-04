@@ -15,8 +15,6 @@ We built this because recycling rules can be confusing. Contaminated recycling b
 
 ## App Screenshots
 
-## App Screenshots
-
 | Smart Scanner | Map Locator | Waste Encyclopedia |
 |:---:|:---:|:---:|
 | <img src="https://github.com/user-attachments/assets/92b2f2e9-2148-41dc-ab82-dc8faa9f951e" width="200" height="350"/> | <img src="https://github.com/user-attachments/assets/39a100c2-db50-4d3b-b9bd-c87c18012868" width="200" height="350"/> | <img src="https://github.com/user-attachments/assets/da2c30ef-1141-4d5e-a8d7-431a3a62c04b" width="200" height="350"/> |
